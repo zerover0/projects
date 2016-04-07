@@ -1,112 +1,68 @@
 ### Ubuntu 14.04에 OpenTSDB 설치와 설정 안내
 
-#### 설치 환경
+##### 설치 환경
 
-<pre>
-Ubuntu Linux 14.04
-</pre>
+* 운영체제: Ubuntu Linux 14.04, x86 64-bit
+* 사용 소프트웨어 버전
+  - OpenTSDB 2.2
+  - JDK 1.7 (Ubuntu 기본 패키지 버전)
+  - GnuPlot 4.6 (Ubuntu 기본 패키지 버전)
+  - ZooKeeper 3.4 (Ubuntu 기본 패키지 버전)
+  - HBase 1.1
 
-#### 설치 요구사항
+##### JDK(Java Development Kit) 설치하기
 
-<pre>
-JRE(Java Runtime Environment) 1.6 이상
-ZooKeeper 3.4.x 이상
-HBase 1.x.x 이상
-GnuPlot 4.2 이상
-</pre>
-
-#### JRE(Java Runtime Environment) 설치하기
-
-1. JRE 설치 여부 확인
-<pre>
+1. JDK 설치 여부 확인
+```sh
 $ java -version
-java version "1.8.0_05"
-Java(TM) SE Runtime Environment (build 1.8.0_05-b13)
-Java HotSpot(TM) 64-Bit Server VM (build 25.5-b02, mixed mode)
-</pre>
+java version "1.7.0_95"
+OpenJDK Runtime Environment (IcedTea 2.6.4) (7u95-2.6.4-0ubuntu0.14.04.2)
+OpenJDK 64-Bit Server VM (build 24.95-b01, mixed mode)
+```
 
-2. JRE가 설치되어 있지 않다면, Ubuntu apt-get 명령으로 JRE를 설치합니다.
-<pre>
-$ sudo apt-get install default-jre
-</pre>
+2. JDK가 설치되어 있지 않다면, 패키지 설치 명령으로 기본 JDK를 설치합니다.
+```sh
+$ sudo apt-get update
+$ sudo apt-get install default-jdk
+```
 
-#### ZooKeeper 단독운영(Standalone Operation) 모드로 설치하기
+##### ZooKeeper 설치하기
 
-[ZooKeeper 동작여부 확인하기]<p>
-
-1. Telnet과 같은 명령으로 동작여부 확인이 가능합니다.</br>
-아래는 로컬 호스트에 ZooKeeper가 작동 중인지 확인하는 경우입니다.
-<pre>
+1. Telnet과 같은 명령으로 동작여부 확인이 가능합니다. Telnet 연결이 거부되거나 바로 끊어지지 않으면 'stat' 명령을 입력해서 ZooKeeper 서버 응답을 받을 수 있습니다.
+```sh
 $ telnet localhost 2181
 Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
-</pre>
-
-2. Telnet 연결이 거부되거나 바로 끊어지지 않으면 'stat' 명령을 입력해서 ZooKeeper 서버 응답을 받을 수 있습니다.
-<pre> 
 stat
 Zookeeper version: 3.4.6-1569965, built on 02/20/2014 09:09 GMT
 Clients:
  /127.0.0.1:38470[1](queued=0,recved=124288,sent=124288)
 ...
-</pre>
+```
 
-[방법1: ZooKeeper 릴리즈를 다운로드 받아서 수동으로 설치하기]</br>
-
-1. 다음 주소에서 ZooKeeper 릴리즈 파일을 다운로드합니다.</br>
-http://apache.mirror.cdnetworks.com/zookeeper/stable/
-<pre>
-e.g. http://apache.mirror.cdnetworks.com/zookeeper/stable/zookeeper-3.4.8.tar.gz
-</pre>
-
-2. 다운로드한 ZooKeeper 릴리즈 파일을 압축해제한 후, 새로 생성된 디렉토리의 최상위로 이동합니다.
-<pre>
-$ tar xzvf zookeeper-3.4.8.tar.gz
-$ cd zookeeper-3.4.8
-</pre>
-
-3. ZooKeepr 서버를 실행하기 전에 환경설정 파일('conf/zoo.cfg')을 설정해야 합니다.</br>
-다음은 'conf/zoo.cfg' 예제 파일입니다.
-<pre>
-tickTime=2000 
-dataDir=/var/lib/zookeeper 
-clientPort=2181 
-</pre>
-
-4. 다음 명령으로 ZooKeeper 서버를 실행합니다.
-<pre>
-$ bin/zkServer.sh start 
-</pre>
-
-5. ZooKeeper 서버를 실행해서 에러가 없으면, 부팅시 자동으로 실행되도록 '/etc/rc.local' 파일에 다음 내용을 추가합니다.
-<pre>
-/usr/local/zookeeper/bin/zkServer.sh start 
-</pre>
-
-[방법2: Ubuntu apt-get 명령으로 패키지 설치하기]</br>
-
-1. 다음 명령을 실행하면 ZooKeeper 릴리즈와 환경설정 파일 패키지가 설치됩니다. 
-<pre>
+2. ZooKeeper가 설치되어 있지 않다면, 패키지 설치 명령으로 ZooKeeper 릴리즈와 환경설정 파일 패키지가 설치합니다.
+```sh
 $ sudo apt-get update 
 $ sudo apt-get install zookeeper zookeeperd 
-</pre>
+```
 
-2. apt-get 명령으로 설치하면, 환경설정 파일은 '/etc/zookeeper/conf/zoo.cfg'에 설치되고, 부팅할 때 ZooKeeper 서버가 자동으로 실행되도록 설정되어 있습니다. ZooKeeper가 데이터를 쓸 때 사용하는 디렉토리는 '/var/lib/zookeeper'로 'zoo.cfg'에 설정되어 있습니다. 
+3. ZooKeeper를 성공적으로 설치하면, 부팅할 때 ZooKeeper 서버는 자동으로 실행되고, 기본 환경설정 파일인 '/etc/zookeeper/conf/zoo.cfg'에 ZooKeeper 데이터 디렉토리는 '/var/lib/zookeeper'로 기본 설정됩니다. 
+```
+dataDir=/var/lib/zookeeper
+clientPort=2181
+```
 
-#### HBase 단독운영(Standalone Operation) 모드로 설치하기
+##### HBase 단독운영(Standalone Operation) 모드로 설치하기
 
-1. 다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.</br>
-http://apache.mirror.cdnetworks.com/hbase/stable/
-<pre>
-e.g. http://apache.tt.co.kr/hbase/stable/hbase-1.1.3-bin.tar.gz
-</pre>
+1. 다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
+  - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
 
 2. 다운로드한 HBase 릴리즈 파일의 압축을 푼 후, 새로 생성된 디렉토리를 '/usr/local/hbase'라는 이름으로 변경해서 이동합니다.
-<pre>
+```sh
 $ tar xzvf hbase-1.1.3-bin.tar.gz 
 $ sudo mv hbase-1.1.3 /usr/local/hbase
-</pre>
+```
 
 3. '/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리와 로그 디렉토리를 다음과 같이 지정합니다.
 <pre>
