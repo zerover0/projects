@@ -19,7 +19,6 @@ java version "1.7.0_95"
 OpenJDK Runtime Environment (IcedTea 2.6.4) (7u95-2.6.4-0ubuntu0.14.04.2)
 OpenJDK 64-Bit Server VM (build 24.95-b01, mixed mode)
 ```
-
   2. JDK가 설치되어 있지 않다면, 패키지 설치 명령으로 기본 JDK를 설치합니다.
 ```sh
 $ sudo apt-get update
