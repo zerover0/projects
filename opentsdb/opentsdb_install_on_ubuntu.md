@@ -1,7 +1,6 @@
 ### Ubuntu 14.04에 OpenTSDB 설치와 설정 안내
 
 ##### 설치 환경
-
   * 운영체제: Ubuntu Linux 14.04, x86 64-bit
   * 사용 소프트웨어 버전
     - OpenTSDB 2.2
@@ -11,15 +10,15 @@
     - HBase 1.1
 
 ##### JDK(Java Development Kit) 설치하기
-
-  1. JDK 설치 여부 확인
+1. JDK 설치 여부 확인
 ```sh
 $ java -version
 java version "1.7.0_95"
 OpenJDK Runtime Environment (IcedTea 2.6.4) (7u95-2.6.4-0ubuntu0.14.04.2)
 OpenJDK 64-Bit Server VM (build 24.95-b01, mixed mode)
 ```
-  2. JDK가 설치되어 있지 않다면, 패키지 설치 명령으로 기본 JDK를 설치합니다.
+
+2. JDK가 설치되어 있지 않다면, 패키지 설치 명령으로 기본 JDK를 설치합니다.
 ```sh
 $ sudo apt-get update
 $ sudo apt-get install default-jdk
