@@ -1,7 +1,6 @@
 ### Raspberry Pi에 Hadoop 설치와 구성 안내
 
 ##### 설치 환경
-
 * 운영체제: Raspbian Jessie Lite, 2016-02-26 release
 * 사용 소프트웨어 버전
   - JDK 1.7 (Raspberry Pi 기본 패키지 버전)
@@ -58,6 +57,10 @@ pi@tinyos-34599-01:~ $ ssh-copy-id pi@tinyos-34599-03
 3.master 호스트에서 slave 호스트로 아이디와 암호 입력없이 로그인할 수 있는지 확인합니다.
 ```sh
 pi@tinyos-34599-01:~ $ ssh tinyos-34599-02
+(암호 입력없이 tinyos-34599-02 호스트에 연결됩니다.)
+pi@tinyos-34599-02:~ $ exit
 pi@tinyos-34599-01:~ $ ssh tinyos-34599-03
+(암호 입력없이 tinyos-34599-03 호스트에 연결됩니다.)
+pi@tinyos-34599-03:~ $ exit
 ```
 
