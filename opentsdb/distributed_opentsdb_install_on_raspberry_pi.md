@@ -115,7 +115,7 @@ $sudo vi /etc/rc.local
 /usr/local/hbase/bin/start-hbase.sh
 ```
 
-#### OpenTSDB 단독운영(Standalone Operation) 모드로 설치하기
+##### OpenTSDB 설치하기
 
 1. 다음 주소에서 OpenTSDB의 Debian package 릴리즈 파일(*.deb)을 다운로드합니다.</br>
 https://github.com/OpenTSDB/opentsdb/releases</br>
