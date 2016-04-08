@@ -1,4 +1,4 @@
-### Raspberry Pi에 OpenTSDB 설치와 구성 안내
+### Raspberry Pi에 OpenTSDB 설치와 단독운영(Standalone)모드 구성 안내
 
 ##### 설치 환경
 
