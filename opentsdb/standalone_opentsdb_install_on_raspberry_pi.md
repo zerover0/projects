@@ -1,28 +1,15 @@
-### Raspberry Pi에 OpenTSDB 설치와 단독운영(Standalone)모드 구성 안내
+### Raspberry Pi에 OpenTSDB 설치와 단독실행형(Standalone) 구성 안내
 
 ##### 설치 환경
-
 * 운영체제: Raspbian Jessie Lite, 2016-02-26 release
 * 사용 소프트웨어 버전
   - JDK 1.7 (Raspberry Pi 기본 패키지 버전)
   - GnuPlot 4.6 (Raspberry Pi 기본 패키지 버전)
-  - ZooKeeper 3.4 (Raspberry Pi 기본 패키지 버전)
-  - Hadoop 2.7
   - HBase 1.1
   - OpenTSDB 2.2
 
-##### 호스트 구성
-* 호스트이름과 IP 주소 구성
-  - tinyos-34599-01 - 10.0.1.64
-  - tinyos-34599-02 - 10.0.1.116
-  - tinyos-34599-03 - 10.0.1.147
-* 호스트별 서버 구성
-  - tinyos-34599-01 : Hadoop NameNode, HBase Master, OpenTSDB, ZooKeeper
-  - tinyos-34599-02 : Hadoop DataNode, HBase RegionServer, ZooKeeper
-  - tinyos-34599-03 : Hadoop DataNode, HBase RegionServer, ZooKeeper
-
 ##### JDK(Java Development Kit) 설치하기
-Hadoop, HBase, ZooKeeper, OpenTSDB 등 서버들이 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다.
+HBase, OpenTSDB 서버는 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다.
 
 1.JDK 설치 여부를 확인합니다.
 ```sh
@@ -47,43 +34,15 @@ $ sudo apt-get update
 $ sudo apt-get install gnuplot 
 ```
 
-##### ZooKeeper 설치하기
-ZooKeeper는 분산 서버들 간에 조정자 역할을 해주는데, HBase가 분산 환경에서 작동할 때 필요합니다.
-
-1.Telnet과 같은 명령으로 동작여부 확인이 가능합니다. Telnet 연결이 거부되거나 바로 끊어지지 않으면 'stat' 명령을 입력해서 ZooKeeper 서버 응답을 받을 수 있습니다.
-```sh
-$ telnet localhost 2181
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-stat
-Zookeeper version: 3.4.6-1569965, built on 02/20/2014 09:09 GMT
-Clients:
- /127.0.0.1:38470[1](queued=0,recved=124288,sent=124288)
-...
-```
-
-2.ZooKeeper가 설치되어 있지 않다면, 패키지 설치 명령으로 ZooKeeper 릴리즈와 환경설정 파일 패키지가 설치합니다.
-```sh
-$ sudo apt-get update 
-$ sudo apt-get install zookeeper zookeeperd 
-```
-
-3.ZooKeeper를 성공적으로 설치하면, 부팅할 때 ZooKeeper 서버는 자동으로 실행되고, 기본 환경설정 파일인 '/etc/zookeeper/conf/zoo.cfg'에 ZooKeeper 데이터 디렉토리는 '/var/lib/zookeeper'로 기본 설정됩니다. 
-```
-dataDir=/var/lib/zookeeper
-clientPort=2181
-```
-
-##### HBase 설치하기
+##### HBase 단독실행형으로 설치하기
 
 1.다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
   - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
 
-2.다운로드한 HBase 릴리즈 파일의 압축을 푼 후, 새로 생성된 디렉토리를 '/usr/local/hbase'라는 이름으로 변경해서 이동합니다.
+2.다운로드한 HBase 릴리즈 파일의 압축을 푼 후, 새로 생성된 디렉토리를 '/usr/local/hbase'로 링크합니다.
 ```sh
-$ tar xzvf hbase-1.1.3-bin.tar.gz 
-$ sudo mv hbase-1.1.3 /usr/local/hbase
+$ tar xzvf hbase-1.1.4-bin.tar.gz -C ~/
+$ sudo ln -s ~/hbase-1.1.4 /usr/local/hbase
 ```
 
 3.'/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리와 로그 디렉토리를 다음과 같이 지정합니다.
@@ -117,7 +76,7 @@ $sudo vi /etc/rc.local
 /usr/local/hbase/bin/start-hbase.sh
 ```
 
-#### OpenTSDB 단독운영(Standalone Operation) 모드로 설치하기
+#### OpenTSDB 설치하기
 
 1. 다음 주소에서 OpenTSDB의 Debian package 릴리즈 파일(*.deb)을 다운로드합니다.</br>
 https://github.com/OpenTSDB/opentsdb/releases</br>
