@@ -1,7 +1,6 @@
-### Raspberry Pi에 OpenTSDB 설치와 단독운영(Standalone)모드 구성 안내
+### Raspberry Pi에 OpenTSDB 설치와 분산환경 구성 안내
 
 ##### 설치 환경
-
 * 운영체제: Raspbian Jessie Lite, 2016-02-26 release
 * 사용 소프트웨어 버전
   - JDK 1.7 (Raspberry Pi 기본 패키지 버전)
@@ -50,7 +49,7 @@ $ sudo apt-get install gnuplot
 ##### ZooKeeper 설치하기
 ZooKeeper는 분산 서버들 간에 조정자 역할을 해주는데, HBase가 분산 환경에서 작동할 때 필요합니다.
 
-1.Telnet과 같은 명령으로 동작여부 확인이 가능합니다. Telnet 연결이 거부되거나 바로 끊어지지 않으면 'stat' 명령을 입력해서 ZooKeeper 서버 응답을 받을 수 있습니다.
+1.Telnet으로 ZooKeeper 서버의 동작여부 확인이 가능합니다. Telnet 연결이 거부되거나 바로 끊어지지 않으면 'stat' 명령을 입력해서 ZooKeeper 서버 응답을 받을 수 있습니다.
 ```sh
 $ telnet localhost 2181
 Trying 127.0.0.1...
@@ -60,10 +59,9 @@ stat
 Zookeeper version: 3.4.6-1569965, built on 02/20/2014 09:09 GMT
 Clients:
  /127.0.0.1:38470[1](queued=0,recved=124288,sent=124288)
-...
 ```
 
-2.ZooKeeper가 설치되어 있지 않다면, 패키지 설치 명령으로 ZooKeeper 릴리즈와 환경설정 파일 패키지가 설치합니다.
+2.ZooKeeper가 설치되어 있지 않다면, 패키지 설치 명령으로 ZooKeeper 릴리즈와 환경설정 파일 패키지를 설치합니다.
 ```sh
 $ sudo apt-get update 
 $ sudo apt-get install zookeeper zookeeperd 
@@ -75,7 +73,7 @@ dataDir=/var/lib/zookeeper
 clientPort=2181
 ```
 
-##### HBase 설치하기
+##### HBase 분산환경에서 설치하기
 
 1.다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
   - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
