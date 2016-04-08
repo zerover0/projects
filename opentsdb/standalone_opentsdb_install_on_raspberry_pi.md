@@ -35,6 +35,7 @@ $ sudo apt-get install gnuplot
 ```
 
 ##### HBase 단독실행형으로 설치하기
+HBase를 단독실행형으로 설치하게 되면, HDFS 서버나 ZooKeeper 서버가 별도로 필요하지 않으며 하나의 호스트에서 실행됩니다.
 
 1.다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
   - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
@@ -47,12 +48,12 @@ $ sudo ln -s ~/hbase-1.1.4 /usr/local/hbase
 
 3.'/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리와 로그 디렉토리를 다음과 같이 지정합니다.
 ```sh
-export JAVA_HOME=/usr/java/jdk1.8/
-export HBASE_LOG_DIR=/tmp/hbase/logs 
+export JAVA_HOME=/usr/lib/jvm/default-java/
+export HBASE_LOG_DIR=/usr/local/hbase/logs
 ```
 
-4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 rootdir 설정과 ZooKeeper 데이터 디렉토리를 설정합니다.</br>
-다음 설정은 로컬 파일시스템을 이용한 HBase 설정의 예입니다.
+4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 rootdir 설정과 ZooKeeper 데이터 디렉토리를 설정합니다.
+다음 설정은 HDFS를 사용하지 않고 로컬 파일시스템을 이용하는 HBase 설정의 예입니다.
 ```
 <configuration> 
   <property> 
@@ -61,24 +62,19 @@ export HBASE_LOG_DIR=/tmp/hbase/logs
   </property> 
   <property> 
     <name>hbase.zookeeper.property.dataDir</name> 
-    <value>/var/lib/zookeeper</value> 
+    <value>/usr/local/hbase/zookeeper</value> 
   </property> 
 </configuration> 
 ```
+
 5.다음 명령을 실행해서 HBase 서버를 실행합니다.
 ```sh
 $ /usr/local/hbase/bin/start-hbase.sh
 ```
 
-6.HBase 서버를 실행해서 에러가 없으면, 부팅시 자동으로 실행되도록 '/etc/rc.local' 파일에 다음 내용을 추가합니다.
-```sh
-$sudo vi /etc/rc.local
-/usr/local/hbase/bin/start-hbase.sh
-```
+##### OpenTSDB 설치하기
 
-#### OpenTSDB 설치하기
-
-1. 다음 주소에서 OpenTSDB의 Debian package 릴리즈 파일(*.deb)을 다운로드합니다.</br>
+1. 다음 주소에서 OpenTSDB의 Debian package 릴리즈 파일(*.deb)을 다운로드합니다.
 https://github.com/OpenTSDB/opentsdb/releases</br>
 참고로, opentsdb-xxx.tar.gz 파일에는 RedHat 기반의 구성 파일이 들어 있어서 Ubuntu(Debian 기반 리눅스)에는 필요한 환경설정 파일을 자동으로 설치할 수 없으므로, Debian package(opentsdb-x.x.x_all.deb) 파일을 다운로드하거나 GitHub에서 소스를 다운로드해서 Debian target으로 소스를 빌드해야 합니다.</br>
 GitHub에서 소스를 받아서 Debian package 빌드하는 방법:
