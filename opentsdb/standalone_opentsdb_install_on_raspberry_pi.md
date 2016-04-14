@@ -49,7 +49,6 @@ $ sudo ln -s ~/hbase-1.1.4 /usr/local/hbase
 3.'/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리와 로그 디렉토리를 다음과 같이 지정합니다.
 ```sh
 export JAVA_HOME=/usr/lib/jvm/default-java/
-export HBASE_LOG_DIR=/usr/local/hbase/logs
 ```
 
 4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 rootdir 설정과 ZooKeeper 데이터 디렉토리를 설정합니다.
