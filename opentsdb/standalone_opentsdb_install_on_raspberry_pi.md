@@ -72,36 +72,41 @@ export HBASE_LOG_DIR=/usr/local/hbase/logs
 $ /usr/local/hbase/bin/start-hbase.sh
 ```
 
+6.HMaster 프로세스가 실행되었는지 확인합니다.
+```sh
+$ jps
+1150 HMaster
+```
+
 ##### OpenTSDB 설치하기
 
-1. 다음 주소에서 OpenTSDB의 Debian package 릴리즈 파일(*.deb)을 다운로드합니다.
-https://github.com/OpenTSDB/opentsdb/releases</br>
-참고로, opentsdb-xxx.tar.gz 파일에는 RedHat 기반의 구성 파일이 들어 있어서 Ubuntu(Debian 기반 리눅스)에는 필요한 환경설정 파일을 자동으로 설치할 수 없으므로, Debian package(opentsdb-x.x.x_all.deb) 파일을 다운로드하거나 GitHub에서 소스를 다운로드해서 Debian target으로 소스를 빌드해야 합니다.</br>
-GitHub에서 소스를 받아서 Debian package 빌드하는 방법:
-<pre>
+1.다음 주소에서 OpenTSDB의 Debian 패키지 릴리즈 파일(*.deb)을 다운로드합니다.
+  > https://github.com/OpenTSDB/opentsdb/releases
+
+  - 참고로, opentsdb-xxx.tar.gz 파일에는 RedHat 기반의 구성 파일이 들어 있어서 Debian 기반 리눅스(Ubuntu, Raspbian)에는 필요한 환경설정 파일을 자동으로 설치할 수 없습니다. Debian 기반 리눅스에 설치할 때는 Debian 패키지(opentsdb-x.x.x_all.deb) 파일을 다운로드하거나 GitHub에서 소스를 다운로드해서 Debian target으로 소스를 빌드해서 Debian 패키지 파일을 생성합니다.
+  - GitHub에서 소스를 받아서 Debian package 빌드하는 절차:
+```sh
 $ git clone git://github.com/OpenTSDB/opentsdb.git 
 $ cd opentsdb 
 $ ./build.sh debian 
-$ cd build/opentsdb-x.x.x/
-</pre>
+```
 
-2. Debian package(*.deb) 파일을 설치합니다.
-<pre>
-$ sudo dpkg -i opentsdb-x.x.x_all.deb
-</pre>
+2.다운로드한 Debian package(*.deb) 파일을 설치합니다. 소스를 빌드한 경우, deb 패키지 파일이 'build/opentsdb-2.2.0/' 디렉토리 아래에 만들어집니다.
+```sh
+$ sudo dpkg -i opentsdb-2.2.0_all.deb
+```
 
-3. Debian package를 설치하면 OpenTSDB 패키지는 '/usr/share/opentsdb/' 디렉토리에 설치되고, 환경설정파일은 '/etc/opentsdb/opentsdb.conf'에 있고, 부팅시에 자동으로 OpenTSDB 서버가 실행되도록 설정됩니다.
+3.Debian package를 설치하면 OpenTSDB 패키지는 '/usr/share/opentsdb/' 디렉토리에 설치되고, 환경설정파일은 '/etc/opentsdb/opentsdb.conf'에 있고, 부팅시에 자동으로 OpenTSDB 서버가 실행됩니다.
 
-4. OpenTSDB를 설치한 후 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행해야 합니다.
-<pre>
+4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행해야 합니다.
+```sh
 $ export HBASE_HOME=/usr/local/hbase 
 $ export COMPRESSION=NONE 
 $ cd /usr/share/opentsdb/tools/
 $ ./create_table.sh
-</pre>
+```
 
-5. 추가로 필요한 환경설정을 '/etc/opentsdb/opentsdb.conf'에 지정합니다.</br>
-추가하려는 데이터의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric을 추가해주는 옵션:
-<pre>
-tsd.core.auto_create_metrics = true
-</pre>
+5.추가로 필요한 환경설정을 '/etc/opentsdb/opentsdb.conf'에 지정합니다. 
+  - 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric을 추가해주는 옵션:
+    - tsd.core.auto_create_metrics = true
+
