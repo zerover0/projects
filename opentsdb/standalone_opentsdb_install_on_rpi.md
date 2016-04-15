@@ -39,6 +39,11 @@ Java(TM) SE Runtime Environment (build 1.7.0_60-b19)
 Java HotSpot(TM) Client VM (build 24.60-b09, mixed mode)
 ```
 
+4.편의를 위해서 Oracle JDK를 'default-java'로 링크합니다.
+```sh
+$ sudo ln -s /usr/lib/jvm/jdk-7-oracle-arm-vfp-hflt /usr/lib/jvm/default-java
+```
+
 ##### GnuPlot 설치하기
 OpenTSDB에서 그래프 그릴 때 사용됩니다.
 
@@ -71,7 +76,7 @@ $ sudo ln -s ~/hbase-1.1.4 /usr/local/hbase
 
 3.'/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리를 다음과 같이 지정합니다.
 ```
-export JAVA_HOME=/usr/lib/jvm/jdk-7-oracle-arm-vfp-hflt
+export JAVA_HOME=/usr/lib/jvm/default-java
 ```
 
 4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 HBase rootdir 설정과 ZooKeeper 데이터 디렉토리를 설정합니다.
@@ -141,7 +146,7 @@ $ sudo dpkg -i opentsdb-2.2.0_all.deb
 
 4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행해야 합니다. 시스템 성능에 따라서 몇분 정도 걸리므로 메시지가 나올 때까지 계속 기다립니다.
 ```sh
-$ export JAVA_HOME=/usr/lib/jvm/jdk-7-oracle-arm-vfp-hflt
+$ export JAVA_HOME=/usr/lib/jvm/default-java
 $ export HBASE_HOME=/usr/local/hbase 
 $ export COMPRESSION=NONE 
 $ cd /usr/share/opentsdb/tools/
