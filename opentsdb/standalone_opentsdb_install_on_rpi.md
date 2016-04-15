@@ -198,7 +198,7 @@ Cannot write to directory [/tmp/opentsdb]
   - 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric을 추가해주는 옵션:
     - tsd.core.auto_create_metrics = true
 
-7.시스템을 리부팅한 후, OpenTSDB가 정상적으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. 아래는 '192.168.0.3' 주소를 갖는 호스트에 OpenTSDB를 설치한 경우의 관리페이지 주소입니다.
+7.시스템을 리부팅한 후, OpenTSDB가 정상적으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. 아래는 '192.168.0.3' 주소를 갖는 호스트에 OpenTSDB를 설치한 경우의 관리페이지 주소입니다. Raspberry Pi의 성능문제로 부팅 후 2분 이상 대기한 후에 접속해야합니다.
   > http://192.168.0.3:4242
 
 ##### Grafana에서 OpenTSDB lookup API 사용을 위한 설정
