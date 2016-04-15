@@ -77,7 +77,7 @@ $ jps
 1150 HMaster
 ```
 
-7.HBase shell을 이용해 HBase에 연결되는지 확인합니다. 이때, native-hadoop 라이브러리를 로드할 수 없다는 경고가 나오는데 하둡을 별도로 설치하기 않았기때문에 나오는 메시지므로 무시합니다.
+7.HBase shell을 이용해 HBase에 연결되는지 확인합니다. 이때, native-hadoop 라이브러리를 로드할 수 없다는 경고가 나오는데 하둡을 별도로 설치하기 않았기때문에 나오는 메시지므로 무시합니다. 시스템 성능에 따라서 몇분 정도 걸리므로 에러메시지가 날 때까지 계속 기다립니다.
 ```sh
 $ /usr/local/hbase/bin/hbase shell
 tinyos@server01:~$ /usr/local/hbase/bin/hbase shell
@@ -116,7 +116,7 @@ $ sudo dpkg -i opentsdb-2.2.0_all.deb
 
 3.Debian package를 설치하면 OpenTSDB 패키지는 '/usr/share/opentsdb/' 디렉토리에 설치되고, 환경설정파일은 '/etc/opentsdb/opentsdb.conf'에 있고, 부팅시에 자동으로 OpenTSDB 서버가 실행됩니다.
 
-4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행해야 합니다.
+4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행해야 합니다. 시스템 성능에 따라서 몇분 정도 걸리므로 에러메시지가 날 때까지 계속 기다립니다.
 ```sh
 $ export HBASE_HOME=/usr/local/hbase 
 $ export COMPRESSION=NONE 
