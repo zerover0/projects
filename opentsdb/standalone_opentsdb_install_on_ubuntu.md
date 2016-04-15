@@ -1,4 +1,4 @@
-### Raspberry Pi에 OpenTSDB 설치와 단독실행형(Standalone) 구성 안내
+### Ubuntu에 OpenTSDB 설치와 단독실행형(Standalone) 구성 안내
 
 ##### 설치 환경
 * 운영체제: Ubuntu 14.04, x86 64-bit
