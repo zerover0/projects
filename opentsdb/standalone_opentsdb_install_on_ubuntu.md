@@ -35,7 +35,7 @@ $ sudo apt-get install gnuplot
 ```
 
 ##### HBase 단독실행형으로 설치하기
-HBase를 단독실행형으로 설치하게 되면, HDFS 서버나 ZooKeeper 서버가 별도로 필요하지 않으며 하나의 호스트에서 실행됩니다.
+HBase를 단독실행형으로 설치하게 되면, HDFS 서버와 ZooKeeper 서버가 별도로 필요하지 않으며 하나의 호스트에서 실행됩니다.
 
 1.다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
   - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
@@ -46,22 +46,22 @@ $ tar xzvf hbase-1.1.4-bin.tar.gz -C ~/
 $ sudo ln -s ~/hbase-1.1.4 /usr/local/hbase
 ```
 
-3.'/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리와 로그 디렉토리를 다음과 같이 지정합니다.
+3.'/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리를 다음과 같이 지정합니다.
 ```sh
 export JAVA_HOME=/usr/lib/jvm/default-java/
 ```
 
-4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 rootdir 설정과 ZooKeeper 데이터 디렉토리를 설정합니다.
-다음 설정은 HDFS를 사용하지 않고 로컬 파일시스템을 이용하는 HBase 설정의 예입니다.
+4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 HBase 루트 디렉토리와 ZooKeeper 데이터 디렉토리를 설정합니다.
+다음 설정은 사용자 홈디렉토리에 데이터가 생성되도록 하는 HBase 설정의 예입니다.
 ```
 <configuration> 
   <property> 
     <name>hbase.rootdir</name> 
-    <value>file:///usr/local/hbase</value> 
+    <value>file:///home/tinyos/hbase</value> 
   </property> 
   <property> 
     <name>hbase.zookeeper.property.dataDir</name> 
-    <value>/usr/local/hbase/zookeeper</value> 
+    <value>/home/tinyos/zookeeper</value> 
   </property> 
 </configuration> 
 ```
