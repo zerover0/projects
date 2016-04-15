@@ -1,11 +1,10 @@
-### Raspberry Pi에 Hadoop 설치와 구성 안내
+### Ubuntu에 Hadoop 설치와 구성 안내
 
 ##### 설치 환경
 * 운영체제
   - Ubuntu 14.04, x86 64-bit
-  - Raspbian Jessie Lite, 2016-02-26 release
 * 사용 소프트웨어 버전
-  - JDK 1.7 (Raspberry Pi 기본 패키지 버전)
+  - JDK 1.7
   - Hadoop 2.7
 
 ##### 호스트 구성
