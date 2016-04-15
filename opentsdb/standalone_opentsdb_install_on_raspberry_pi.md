@@ -77,6 +77,25 @@ $ jps
 1150 HMaster
 ```
 
+7.HBase shell을 이용해 HBase에 연결되는지 확인합니다. 이때, native-hadoop 라이브러리를 로드할 수 없다는 경고가 나오는데 하둡을 별도로 설치하기 않았기때문에 나오는 메시지므로 무시합니다.
+```sh
+$ /usr/local/hbase/bin/hbase shell
+tinyos@server01:~$ /usr/local/hbase/bin/hbase shell
+2016-04-15 11:24:19,339 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 1.1.4, r14c0e77956f9bb4c6edf0378474264843e4a82c3, Wed Mar 16 21:18:26 PDT 2016
+
+hbase(main):001:0> 
+```
+
+8.HBase 동작에 문제가 없다고 확인되면, 부팅할 때 자동으로 실행되도록 '/etc/rc.local'에 추가합니다. 추가할 때 'exit 0' 라인 이전에 추가해야 합니다.
+```sh
+$ sudo vi /etc/rc.local
+/usr/local/hbase/bin/start-hbase.sh
+exit 0
+```
+
 ##### OpenTSDB 설치하기
 
 1.다음 주소에서 OpenTSDB의 Debian 패키지 릴리즈 파일(*.deb)을 다운로드합니다.
@@ -103,9 +122,35 @@ $ export HBASE_HOME=/usr/local/hbase
 $ export COMPRESSION=NONE 
 $ cd /usr/share/opentsdb/tools/
 $ ./create_table.sh
+create 'tsdb-uid',
+  {NAME => 'id', COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'},
+  {NAME => 'name', COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'}
+0 row(s) in 2.3620 seconds
+
+Hbase::Table - tsdb-uid
+
+create 'tsdb',
+  {NAME => 't', VERSIONS => 1, COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'}
+0 row(s) in 1.3680 seconds
+
+Hbase::Table - tsdb
+  
+create 'tsdb-tree',
+  {NAME => 't', VERSIONS => 1, COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'}
+0 row(s) in 1.3270 seconds
+
+Hbase::Table - tsdb-tree
+  
+create 'tsdb-meta',
+  {NAME => 'name', COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'}
+0 row(s) in 1.3340 seconds
+
+Hbase::Table - tsdb-meta
 ```
 
 5.추가로 필요한 환경설정을 '/etc/opentsdb/opentsdb.conf'에 지정합니다. 
   - 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric을 추가해주는 옵션:
     - tsd.core.auto_create_metrics = true
 
+6.시스템을 부팅한 후, OpenTSDB가 정상저으로 작동하는지 OpenTSDB 홈페이지를 통해서 확인합니다. 아래는 '192.168.0.3' 주소를 갖는 호스트에 OpenTSDB를 설치한 경우의 홈페이지 주소입니다.
+  > http://192.168.0.3:4242
