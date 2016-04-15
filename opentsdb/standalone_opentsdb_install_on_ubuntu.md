@@ -154,3 +154,13 @@ Hbase::Table - tsdb-meta
 
 6.시스템을 부팅한 후, OpenTSDB가 정상저으로 작동하는지 OpenTSDB 홈페이지를 통해서 확인합니다. 아래는 '192.168.0.3' 주소를 갖는 호스트에 OpenTSDB를 설치한 경우의 홈페이지 주소입니다.
   > http://192.168.0.3:4242
+
+##### Grafana에서 OpenTSDB lookup API 사용을 위한 설정
+
+1.Grafana에서 템플릿을 만들 때 변수가 자동으로 나타나도록 하려면 'opentsdb.conf'에 아래 설정을 활성화해야 합니다.
+  - tsd.core.meta.enable_realtime_ts = true
+
+2.OpenTSDB에 있는 time series 데이터의 메타데이터를 나타나도록 하려면 아래 명령을 OpenTSDB 서버가 실행 중인 곳에서 실행합니다.
+```sh
+$ /usr/share/opentsdb/bin/tsdb uid metasync
+```
