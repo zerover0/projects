@@ -51,8 +51,8 @@ $ sudo ln -s ~/hbase-1.1.4 /usr/local/hbase
 export JAVA_HOME=/usr/lib/jvm/default-java/
 ```
 
-4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 HBase 루트 디렉토리와 ZooKeeper 데이터 디렉토리를 설정합니다.
-다음 설정은 사용자 홈디렉토리에 데이터가 생성되도록 하는 HBase 설정의 예입니다.
+4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 HBase rootdir 디렉토리와 ZooKeeper 데이터 디렉토리를 설정합니다.
+다음 설정은 사용자 홈디렉토리에 데이터 디렉토리가 생성되도록 하는 HBase 설정의 예입니다.
 ```
 <configuration> 
   <property> 
@@ -152,7 +152,7 @@ Hbase::Table - tsdb-meta
   - 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric을 추가해주는 옵션:
     - tsd.core.auto_create_metrics = true
 
-6.시스템을 부팅한 후, OpenTSDB가 정상저으로 작동하는지 OpenTSDB 홈페이지를 통해서 확인합니다. 아래는 '192.168.0.3' 주소를 갖는 호스트에 OpenTSDB를 설치한 경우의 홈페이지 주소입니다.
+6.시스템을 리부팅한 후, OpenTSDB가 정상저으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. 아래는 '192.168.0.3' 주소를 갖는 호스트에 OpenTSDB를 설치한 경우의 관리페이지 주소입니다.
   > http://192.168.0.3:4242
 
 ##### Grafana에서 OpenTSDB lookup API 사용을 위한 설정
