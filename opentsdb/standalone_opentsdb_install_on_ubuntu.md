@@ -67,7 +67,7 @@ $ sudo vi /etc/hosts
 HBase를 단독실행형으로 설치하게 되면, HDFS 서버와 ZooKeeper 서버가 별도로 필요하지 않으며 하나의 호스트에서 실행됩니다.
 
 1.다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
-  - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
+  > http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
 
 2.다운로드한 HBase 릴리즈 파일의 압축을 푼 후, 새로 생성된 디렉토리를 '/usr/local/hbase'로 링크합니다.
 ```sh
@@ -116,13 +116,6 @@ Type "exit<RETURN>" to leave the HBase Shell
 Version 1.1.4, r14c0e77956f9bb4c6edf0378474264843e4a82c3, Wed Mar 16 21:18:26 PDT 2016
 
 hbase(main):001:0> 
-```
-
-8.HBase 동작에 문제가 없다고 확인되면, 부팅할 때 자동으로 실행되도록 '/etc/rc.local'에 추가합니다. 추가할 때 'exit 0' 라인 이전에 추가해야 합니다.
-```sh
-$ sudo vi /etc/rc.local
-/usr/local/hbase/bin/start-hbase.sh
-exit 0
 ```
 
 ##### OpenTSDB 설치하기
@@ -199,8 +192,10 @@ Cannot write to directory [/tmp/opentsdb]
   - 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric을 추가해주는 옵션:
     - tsd.core.auto_create_metrics = true
 
-7.시스템을 리부팅한 후, OpenTSDB가 정상저으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. 아래는 '192.168.0.3' 주소를 갖는 호스트에 OpenTSDB를 설치한 경우의 관리페이지 주소입니다.
-  > http://192.168.0.3:4242
+7.OpenTSDB 서비스를 재시작한 후, 서비스가 정상저으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. 호스트 주소가 '192.168.0.3'인 경우, 관리페이지 주소는 'http://192.168.0.3:4242' 입니다.
+```sh
+$ sudo service opentsdb restart
+```
 
 ##### Grafana에서 OpenTSDB lookup API 사용을 위한 설정
 
