@@ -3,13 +3,14 @@
 ##### 설치 환경
 * 운영체제: Ubuntu 14.04, x86 64-bit
 * 사용 소프트웨어 버전
-  - JDK 1.7 (Raspberry Pi 기본 패키지 버전)
-  - GnuPlot 4.6 (Raspberry Pi 기본 패키지 버전)
-  - HBase 1.1
-  - OpenTSDB 2.2
+  - Oracle JDK 1.7
+    - [주의] Open JDK는 Oracle JDK보다 성능도 나쁘고 HBase가 여러가지 버그를 만들기때문에 Oracle JDK를 사용합니다.
+  - GnuPlot 4.6
+  - HBase 1.1.4
+  - OpenTSDB 2.2.0
 
 ##### JDK(Java Development Kit) 설치하기
-HBase, OpenTSDB 서버는 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다.
+HBase, OpenTSDB 서버는 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다. Open JDK는 Oracle JDK보다 성능도 나쁘고 HBase가 여러가지 버그를 만들기때문에 Oracle JDK를 사용합니다.
 
 1.JDK 설치 여부를 확인합니다.
 ```sh
@@ -19,10 +20,24 @@ OpenJDK Runtime Environment (IcedTea 2.6.4) (7u95-2.6.4-0ubuntu0.14.04.2)
 OpenJDK 64-Bit Server VM (build 24.95-b01, mixed mode)
 ```
 
-2.JDK가 설치되어 있지 않다면, 패키지 설치 명령으로 기본 JDK를 설치합니다.
+2.OpenJDK가 이미 설치되어 있다면, 제거합니다. JDK가 설치되어 있지 않다면, PPA repository를 추가하고 Oracle JDK를 설치합니다.
+  - Open JDK 제거
 ```sh
+$ sudo apt-get purge openjdk*
+```
+  - Oracle JDK 설치
+```sh
+$ sudo add-apt-repository ppa:webupd8team/java
 $ sudo apt-get update
-$ sudo apt-get install default-jdk
+$ sudo apt-get install oracle-java7-installer
+```
+
+3.JDK 버전을 확인합니다.
+```sh
+$ java -version
+java version "1.7.0_80"
+Java(TM) SE Runtime Environment (build 1.7.0_80-b15)
+Java HotSpot(TM) 64-Bit Server VM (build 24.80-b11, mixed mode)
 ```
 
 ##### GnuPlot 설치하기
@@ -32,6 +47,15 @@ OpenTSDB에서 그래프 그릴 때 사용됩니다.
 ```sh
 $ sudo apt-get update 
 $ sudo apt-get install gnuplot 
+```
+
+##### localhost 주소 변경하기
+Linux에서는 '/etc/hosts' 파일에 localhost의 주소로 '127.0.0.1' 뿐만아니라 '127.0.1.1'도 사용하는데, 이것을 '127.0.0.1'로 바꾸어줍니다. '127.0.1.1'을 사용하면 HBase에서 오류가 나는 경우가 있어서 수정이 필요합니다.
+
+1.'/etc/hosts' 파일에서 '127.0.1.1'을 찾아서 '127.0.0.1'로 수정합니다.
+```
+$ sudo vi /etc/hosts
+127.0.0.1       server01
 ```
 
 ##### HBase 단독실행형으로 설치하기
@@ -48,7 +72,7 @@ $ sudo ln -s ~/hbase-1.1.4 /usr/local/hbase
 
 3.'/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리를 다음과 같이 지정합니다.
 ```sh
-export JAVA_HOME=/usr/lib/jvm/default-java/
+export JAVA_HOME=/usr/lib/jvm/java-7-oracle
 ```
 
 4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 HBase rootdir 디렉토리와 ZooKeeper 데이터 디렉토리를 설정합니다.
@@ -101,20 +125,20 @@ exit 0
 1.다음 주소에서 OpenTSDB의 Debian 패키지 릴리즈 파일(*.deb)을 다운로드합니다.
   > https://github.com/OpenTSDB/opentsdb/releases
 
-  - 참고로, opentsdb-xxx.tar.gz 파일에는 RedHat 기반의 구성 파일이 들어 있어서 Debian 기반 리눅스(Ubuntu, Raspbian)에는 필요한 환경설정 파일을 자동으로 설치할 수 없습니다. Debian 기반 리눅스에 설치할 때는 Debian 패키지(opentsdb-x.x.x_all.deb) 파일을 다운로드하거나 GitHub에서 소스를 다운로드해서 Debian target으로 소스를 빌드해서 Debian 패키지 파일을 생성합니다.
-  - GitHub에서 소스를 받아서 Debian package 빌드하는 절차:
+  - 참고로, opentsdb-x.x.x.tar.gz 파일에는 RedHat 기반의 구성 파일이 들어 있어서 Debian 기반 리눅스(Ubuntu, Raspbian)에는 필요한 환경설정 파일을 자동으로 설치할 수 없습니다. Debian 기반 리눅스에 설치할 때는 Debian 패키지(opentsdb-x.x.x_all.deb) 파일을 다운로드하거나 GitHub에서 소스를 다운로드해서 'Debian' target으로 소스를 빌드해서 Debian 패키지 파일을 생성합니다.
+  - GitHub에서 소스를 받아서 Debian 패키지 빌드하는 절차:
 ```sh
 $ git clone git://github.com/OpenTSDB/opentsdb.git 
 $ cd opentsdb 
 $ ./build.sh debian 
 ```
 
-2.다운로드한 Debian package(*.deb) 파일을 설치합니다. 소스를 빌드한 경우, deb 패키지 파일이 'build/opentsdb-2.2.0/' 디렉토리 아래에 만들어집니다.
+2.다운로드한 Debian 패캐지 파일을 설치합니다. 소스를 빌드한 경우, 패키지 파일이 'build/opentsdb-x.x.x/' 디렉토리 아래에 만들어집니다.
 ```sh
 $ sudo dpkg -i opentsdb-2.2.0_all.deb
 ```
 
-3.Debian package를 설치하면 OpenTSDB 패키지는 '/usr/share/opentsdb/' 디렉토리에 설치되고, 환경설정파일은 '/etc/opentsdb/opentsdb.conf'에 있고, 부팅시에 자동으로 OpenTSDB 서버가 실행됩니다.
+3.Debian 패키지를 설치하면 OpenTSDB 패키지는 '/usr/share/opentsdb/' 디렉토리에 설치되고, 환경설정파일은 '/etc/opentsdb/opentsdb.conf'에 있고, 부팅시에 자동으로 OpenTSDB 서버가 실행됩니다.
 
 4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행해야 합니다.
 ```sh
@@ -122,6 +146,11 @@ $ export HBASE_HOME=/usr/local/hbase
 $ export COMPRESSION=NONE 
 $ cd /usr/share/opentsdb/tools/
 $ ./create_table.sh
+2016-04-15 11:24:19,339 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
+HBase Shell; enter 'help<RETURN>' for list of supported commands.
+Type "exit<RETURN>" to leave the HBase Shell
+Version 1.1.4, r14c0e77956f9bb4c6edf0378474264843e4a82c3, Wed Mar 16 21:18:26 PDT 2016
+
 create 'tsdb-uid',
   {NAME => 'id', COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'},
   {NAME => 'name', COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'}
@@ -148,16 +177,28 @@ create 'tsdb-meta',
 Hbase::Table - tsdb-meta
 ```
 
-5.추가로 필요한 환경설정을 '/etc/opentsdb/opentsdb.conf'에 지정합니다. 
+5.TSD 데몬을 실행해서 문제가 없는지 확인합니다.
+```sh
+$ /usr/share/opentsdb/bin/tsdb tsd
+(중간 생략)
+2016-04-15 20:54:56,124 INFO  [main] TSDMain: Ready to serve on /0.0.0.0:4242
+```
+  - 만일, 아래와 같은 에러가 나면, '/tmp/opentsdb' 디렉토리를 지우고 다시 실행합니다.
+```
+2016-04-15 20:53:44,517 INFO  [main] Config: Successfully loaded configuration file: /etc/opentsdb/opentsdb.conf
+Cannot write to directory [/tmp/opentsdb]
+```
+
+6.추가로 필요한 환경설정을 '/etc/opentsdb/opentsdb.conf'에 지정합니다. 
   - 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric을 추가해주는 옵션:
     - tsd.core.auto_create_metrics = true
 
-6.시스템을 리부팅한 후, OpenTSDB가 정상저으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. 아래는 '192.168.0.3' 주소를 갖는 호스트에 OpenTSDB를 설치한 경우의 관리페이지 주소입니다.
+7.시스템을 리부팅한 후, OpenTSDB가 정상저으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. 아래는 '192.168.0.3' 주소를 갖는 호스트에 OpenTSDB를 설치한 경우의 관리페이지 주소입니다.
   > http://192.168.0.3:4242
 
 ##### Grafana에서 OpenTSDB lookup API 사용을 위한 설정
 
-1.Grafana에서 템플릿을 만들 때 변수가 자동으로 나타나도록 하려면 'opentsdb.conf'에 아래 설정을 활성화해야 합니다.
+1.Grafana에서 템플릿을 만들 때 변수가 자동으로 나타나도록 하려면 'opentsdb.conf'에 아래 설정을 추가하여 활성화해야 합니다.
   - tsd.core.meta.enable_realtime_ts = true
 
 2.OpenTSDB에 있는 time series 데이터의 메타데이터를 나타나도록 하려면 아래 명령을 OpenTSDB 서버가 실행 중인 곳에서 실행합니다.
