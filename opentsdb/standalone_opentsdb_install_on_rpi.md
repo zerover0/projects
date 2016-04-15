@@ -191,7 +191,7 @@ Cannot write to directory [/tmp/opentsdb]
   - 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric을 추가해주는 옵션:
     - tsd.core.auto_create_metrics = true
 
-7.OpenTSDB 서비스를 재시작한 후, 서비스가 정상적으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. 호스트 주소가 '192.168.0.3'인 경우, 관리페이지 주소는 'http://192.168.0.3:4242' 입니다.
+7.OpenTSDB 서비스를 재시작한 후, 서비스가 정상적으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. HBase 서버를 실행한 후 초기화하는데까지 걸리는 시간을 고려해서 약 1분 정도 후에 OpenTSDB 서비스를 실행합니다. 호스트 주소가 '192.168.0.3'인 경우, 관리페이지 주소는 'http://192.168.0.3:4242' 입니다.
 ```sh
 $ sudo service opentsdb restart
 ```
