@@ -1,6 +1,7 @@
 ### Raspberry Pi에 OpenTSDB 설치와 단독실행형(Standalone) 구성 안내
 
 ##### 설치 환경
+* 하드웨어: Raspberry Pi 1 Model B+
 * 운영체제: Raspbian Jessie Lite, 2016-03-18 release
 * 사용 소프트웨어 버전
   - Oracle JDK 1.7
