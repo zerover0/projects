@@ -5,13 +5,12 @@
 * 운영체제: Raspbian Jessie Lite, 2016-03-18 release
 * 사용 소프트웨어 버전
   - Oracle JDK 1.7
-    - [주의] Open JDK는 Oracle JDK보다 성능도 나쁘고 HBase가 여러가지 버그를 만들기때문에 Oracle JDK를 사용합니다.
   - GnuPlot 4.6
   - HBase 1.1.4
   - OpenTSDB 2.2.0
 
 ##### JDK(Java Development Kit) 설치하기
-HBase, OpenTSDB 서버는 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다.
+HBase, OpenTSDB 서버는 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다. Open JDK는 Oracle JDK보다 성능도 나쁘고 설치할 프로그램들과 여러가지 버그를 만들기때문에 Oracle JDK를 사용합니다.
 
 1.JDK 설치 여부를 확인합니다.
 ```sh
