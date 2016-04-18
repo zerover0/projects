@@ -303,3 +303,8 @@ $ /usr/share/opentsdb/bin/tsdb uid metasync
 
 ZooKeepr는 다른 서버 프로그램들이 실행되기 이전에 독립적으로 실행되어야하므로 부팅할 때 자동으로 실행되도록 설정한다. 부팅할 때 실행하는 여러가지 방법 가운데, 아래는 'crontab'을 이용하는 방법이다.
 
+1.'/etc/crontab' 파일을 열어서 파일 끝부분에 부팅할 때 실행할 서버 스크립트를 추가하고 저장한다.
+```sh
+$ sudo vi /etc/crontab
+@reboot hadoop /home/hadoop/app/zookeeper/bin/zkServer.sh start
+```
