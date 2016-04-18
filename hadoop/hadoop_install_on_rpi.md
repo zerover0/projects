@@ -120,7 +120,7 @@ $ sudo adduser hadoop sudo
 $ mkdir ~/app ~/data
 ```
 
-### (공통) '/etc/hosts' 파일 수정과 배포
+### (공통) '/etc/hosts' 파일에 호스트이름 등록
 
 1.master 노드의 '/etc/hosts' 파일을 열어서 첫 줄에 있는 'localhost' 정보를 제외하고 모두 지운다. 특히, '/etc/hosts' 파일에서 '127.0.1.1'이라는 주소가 있는 줄을 지운다. 이유는 일부 서버 프로그램에서 '127.0.0.1'만 로컬호스트 주소로 인식하고 '127.0.1.1'은 로컬호스트 주소로 인식하지 못해서 문제를 일으키는 경우가 있기 때문이다.
 
@@ -160,7 +160,7 @@ $ mv ~/app/hadoop-2.6.4 ~/app/hadoop
 ```
 
 3.'hadoop-env.sh' 파일을 열어서 'JAVA_HOME'과 'HADOOP_LOG_DIR'을 수정한 후 저장한다.
-  - HADOOP_DATANODE_OPTS : Raspberry Pi 1(ARMv6) 모델에서 Java VM을 원격으로 실행하려면 "-Dcom.sun.management.jmxremote -client" 옵션을 추가해야한다
+  - HADOOP_DATANODE_OPTS : Raspberry Pi 1(ARMv6) 모델에서 Java Server VM을 원격으로 실행하려면 "-Dcom.sun.management.jmxremote -client" 옵션을 추가해야한다(Raspberry Pi 2,3에서는 불필요)
 ```sh
 $ vi ~/app/hadoop/etc/hadoop/hadoop-env.sh
 export JAVA_HOME=/usr/lib/jvm/default-java
@@ -176,7 +176,7 @@ export HADOOP_MAPRED_LOG_DIR=/home/hadoop/data/hadoop/logs
 ```
 
 5.'yarn-env.sh' 파일을 열어서 'JAVA_HOME'을 수정하고 'YARN_LOG_DIR'을 추가한 후 저장한다.
-  - YARN_NODEMANAGER_OPTS : Raspberry Pi 1(ARMv6) 모델에서 Java VM을 원격으로 실행하려면 "-Dcom.sun.management.jmxremote -client" 옵션을 추가해야한다
+  - YARN_NODEMANAGER_OPTS : Raspberry Pi 1(ARMv6) Java Server VM을 원격으로 실행하려면 "-Dcom.sun.management.jmxremote -client" 옵션을 추가해야한다(Raspberry Pi 2,3에서는 불필요)
 ```sh
 $ vi ~/app/hadoop/etc/hadoop/yarn-env.sh
 export JAVA_HOME=/usr/lib/jvm/default-java
