@@ -65,14 +65,6 @@ dns-nameservers 210.220.163.82 219.250.36.130
 
 2.시스템을 재부팅한다.
 
-### (공통) OpenSSH 서버 설치
-
-1.OpenSSH 서버를 설치한다.
-```sh
-$ sudo apt-get update
-$ sudo apt-get install openssh-server
-```
-
 ### (공통) Oracle JDK 설치
 
 Open JDK는 Oracle JDK보다 성능이 떨어지고 Hadoop 서버 프로그램들과 알 수 없는 버그를 만들기때문에 Oracle JDK를 사용한다.
@@ -157,13 +149,13 @@ $ ssh-copy-id hadoop@server03
 
 ### (master) Hadoop 프로그램 설치와 환경설정
 
-1.Hadoop 홈페이지에서 2.6.4 릴리즈 파일을 다운로드한다.
+1.Hadoop 홈페이지에서 릴리즈 파일을 다운로드한다.
   - http://hadoop.apache.org
 
 2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'hadoop'으로 바꾼다.
 ```sh
-$ tar xzf hadoop-2.6.4.tar.gz -C ~/app/
-$ mv ~/app/hadoop-2.6.4 ~/app/hadoop
+$ tar xzf hadoop-2.7.2.tar.gz -C ~/app/
+$ mv ~/app/hadoop-2.7.2 ~/app/hadoop
 ```
 
 3.'hadoop-env.sh' 파일을 열어서 'JAVA_HOME'과 'HADOOP_LOG_DIR'을 수정한 후 저장한다.
@@ -171,6 +163,7 @@ $ mv ~/app/hadoop-2.6.4 ~/app/hadoop
 $ vi ~/app/hadoop/etc/hadoop/hadoop-env.sh
 export JAVA_HOME=/usr/lib/jvm/default-java
 export HADOOP_LOG_DIR=/home/hadoop/data/hadoop/logs
+export HADOOP_DATANODE_OPTS="-Dhadoop.security.logger=ERROR,RFAS $HADOOP_DATANODE_OPTS -Dcom.sun.management.jmxremote -client"
 ```
 
 4.'mapred-env.sh' 파일을 열어서 'JAVA_HOME'과 'HADOOP_MAPRED_LOG_DIR'을 수정한 후 저장한다.
@@ -184,6 +177,7 @@ export HADOOP_MAPRED_LOG_DIR=/home/hadoop/data/hadoop/logs
 ```sh
 $ vi ~/app/hadoop/etc/hadoop/yarn-env.sh
 export JAVA_HOME=/usr/lib/jvm/default-java
+export YARN_NODEMANAGER_OPTS="$YARN_NODEMANAGER_OPTS -Dcom.sun.management.jmxremote -client"
 # default log directory & file <= 이 주석 다음에 YARN_LOG_DIR 추가
 export YARN_LOG_DIR=/home/hadoop/data/hadoop/logs
 ```
