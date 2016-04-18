@@ -12,14 +12,13 @@
 
 ##### 호스트 구성
 * 호스트이름과 IP 주소 구성
-  - 192.168.0.211 : server01
-  - 192.168.0.212 : server02
-  - 192.168.0.213 : server03
-* 호스트별 서버 구성
+  - server01 : 192.168.0.211
+  - server01 : 192.168.0.212
+  - server01 : 192.168.0.213
 * 호스트별 서버 구성
   - server01 : Master 노드, Hadoop NameNode/SecondaryNameNode/DataNode, YARN ResourceManager/NodeManager, HBase Master/RegionServer, ZooKeeper, OpenTSDB
   - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase backup Master/RegionServer, ZooKeeper
-  - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase backup Master/RegionServer, ZooKeeper
+  - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer, ZooKeeper
 
 ##### JDK(Java Development Kit) 설치하기
 Hadoop, HBase, ZooKeeper, OpenTSDB 등 서버들이 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다. Open JDK는 Oracle JDK보다 성능이 떨어지고 Hadoop 서버 프로그램들과 알 수 없는 버그를 만들기때문에 Oracle JDK를 사용한다.
@@ -60,6 +59,14 @@ OpenTSDB에서 그래프 그릴 때 사용됩니다.
 $ sudo apt-get update 
 $ sudo apt-get install gnuplot 
 ```
+
+##### Hadoop 설치하기
+
+* 아래 링크의 문서를 따라서 Hadoop을 설치한다.
+  - Ubuntu Server 14.04에 Hadoop 설치하기
+    - https://github.com/zerover0/projects/blob/master/hadoop/hadoop_install_on_ubuntu.md
+  - Raspberry Pi에 Hadoop 설치하기
+    - https://github.com/zerover0/projects/blob/master/hadoop/hadoop_install_on_rpi.md
 
 ##### ZooKeeper 설치하기
 ZooKeeper는 분산 서버들 간에 조정자 역할을 해주는데, HBase가 분산 환경에서 작동할 때 필요합니다.
