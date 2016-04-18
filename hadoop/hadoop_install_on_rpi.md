@@ -7,7 +7,7 @@
   - Raspbian Jessie Lite, 2016-03-18 release
 * 사용 소프트웨어 버전
   - Oracle JDK 1.7
-  - Hadoop 2.7.2
+  - Hadoop 2.6.4
 
 ### 호스트 구성
 
@@ -150,13 +150,13 @@ $ ssh-copy-id hadoop@server03
 
 ### (master) Hadoop 프로그램 설치와 환경설정
 
-1.Hadoop 홈페이지에서 릴리즈 파일을 다운로드한다.
+1.Hadoop 홈페이지에서 2.6.4 릴리즈 파일을 다운로드한다.
   - http://hadoop.apache.org
 
 2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'hadoop'으로 바꾼다.
 ```sh
-$ tar xzf hadoop-2.7.2.tar.gz -C ~/app/
-$ mv ~/app/hadoop-2.7.2 ~/app/hadoop
+$ tar xzf hadoop-2.6.4.tar.gz -C ~/app/
+$ mv ~/app/hadoop-2.6.4 ~/app/hadoop
 ```
 
 3.'hadoop-env.sh' 파일을 열어서 'JAVA_HOME'과 'HADOOP_LOG_DIR'을 수정한 후 저장한다.
