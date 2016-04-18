@@ -66,7 +66,7 @@ $ sudo vi /etc/hosts
 HBase를 단독실행형으로 설치하게 되면, HDFS 서버와 ZooKeeper 서버가 별도로 필요하지 않으며 하나의 호스트에서 실행됩니다.
 
 1.다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
-  > http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
+  - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
 
 2.다운로드한 HBase 릴리즈 파일의 압축을 푼 후, 새로 생성된 디렉토리를 '/usr/local/hbase'로 링크합니다.
 ```sh
@@ -120,7 +120,7 @@ hbase(main):001:0>
 ##### OpenTSDB 설치하기
 
 1.다음 주소에서 OpenTSDB의 Debian 패키지 릴리즈 파일(*.deb)을 다운로드합니다.
-  > https://github.com/OpenTSDB/opentsdb/releases
+  - https://github.com/OpenTSDB/opentsdb/releases
 
   - 참고로, opentsdb-x.x.x.tar.gz 파일에는 RedHat 기반의 구성 파일이 들어 있어서 Debian 기반 리눅스(Ubuntu, Raspbian)에는 필요한 환경설정 파일을 자동으로 설치할 수 없습니다. Debian 기반 리눅스에 설치할 때는 Debian 패키지(opentsdb-x.x.x_all.deb) 파일을 다운로드하거나 GitHub에서 소스를 다운로드해서 'Debian' target으로 소스를 빌드해서 Debian 패키지 파일을 생성합니다.
   - GitHub에서 소스를 받아서 Debian 패키지 빌드하는 절차:
