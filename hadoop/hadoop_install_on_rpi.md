@@ -1,7 +1,8 @@
 # Raspberry Pi에 Hadoop 설치와 구성 안내
 
 ### 설치 환경
-
+* 하드웨어
+  - Raspberry Pi 1 Model B+
 * 운영체제
   - Raspbian Jessie Lite, 2016-03-18 release
 * 사용 소프트웨어 버전
@@ -159,6 +160,7 @@ $ mv ~/app/hadoop-2.7.2 ~/app/hadoop
 ```
 
 3.'hadoop-env.sh' 파일을 열어서 'JAVA_HOME'과 'HADOOP_LOG_DIR'을 수정한 후 저장한다.
+  - HADOOP_DATANODE_OPTS : Raspberry Pi 1(ARMv6) 모델에서 Java VM을 원격으로 실행하려면 "-Dcom.sun.management.jmxremote -client" 옵션을 추가해야한다
 ```sh
 $ vi ~/app/hadoop/etc/hadoop/hadoop-env.sh
 export JAVA_HOME=/usr/lib/jvm/default-java
@@ -174,6 +176,7 @@ export HADOOP_MAPRED_LOG_DIR=/home/hadoop/data/hadoop/logs
 ```
 
 5.'yarn-env.sh' 파일을 열어서 'JAVA_HOME'을 수정하고 'YARN_LOG_DIR'을 추가한 후 저장한다.
+  - YARN_NODEMANAGER_OPTS : Raspberry Pi 1(ARMv6) 모델에서 Java VM을 원격으로 실행하려면 "-Dcom.sun.management.jmxremote -client" 옵션을 추가해야한다
 ```sh
 $ vi ~/app/hadoop/etc/hadoop/yarn-env.sh
 export JAVA_HOME=/usr/lib/jvm/default-java
