@@ -4,13 +4,12 @@
 * 운영체제: Ubuntu 14.04, x86 64-bit
 * 사용 소프트웨어 버전
   - Oracle JDK 1.7
-    - [주의] Open JDK는 Oracle JDK보다 성능도 나쁘고 HBase가 여러가지 버그를 만들기때문에 Oracle JDK를 사용합니다.
   - GnuPlot 4.6
   - HBase 1.1.4
   - OpenTSDB 2.2.0
 
 ##### JDK(Java Development Kit) 설치하기
-HBase, OpenTSDB 서버는 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다. Open JDK는 Oracle JDK보다 성능도 나쁘고 HBase가 여러가지 버그를 만들기때문에 Oracle JDK를 사용합니다.
+HBase, OpenTSDB 서버는 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다. Open JDK는 Oracle JDK보다 성능도 나쁘고 설치할 프로그램들과 여러가지 버그를 만들기때문에 Oracle JDK를 사용합니다.
 
 1.JDK 설치 여부를 확인합니다.
 ```sh
@@ -67,7 +66,7 @@ $ sudo vi /etc/hosts
 HBase를 단독실행형으로 설치하게 되면, HDFS 서버와 ZooKeeper 서버가 별도로 필요하지 않으며 하나의 호스트에서 실행됩니다.
 
 1.다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
-  > http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
+  - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
 
 2.다운로드한 HBase 릴리즈 파일의 압축을 푼 후, 새로 생성된 디렉토리를 '/usr/local/hbase'로 링크합니다.
 ```sh
@@ -120,20 +119,16 @@ hbase(main):001:0>
 
 ##### OpenTSDB 설치하기
 
-1.다음 주소에서 OpenTSDB의 Debian 패키지 릴리즈 파일(*.deb)을 다운로드합니다.
-  > https://github.com/OpenTSDB/opentsdb/releases
+1.다음 주소에서 OpenTSDB의 릴리즈 파일을 다운로드합니다.
+  - https://github.com/OpenTSDB/opentsdb/releases
 
-  - 참고로, opentsdb-x.x.x.tar.gz 파일에는 RedHat 기반의 구성 파일이 들어 있어서 Debian 기반 리눅스(Ubuntu, Raspbian)에는 필요한 환경설정 파일을 자동으로 설치할 수 없습니다. Debian 기반 리눅스에 설치할 때는 Debian 패키지(opentsdb-x.x.x_all.deb) 파일을 다운로드하거나 GitHub에서 소스를 다운로드해서 'Debian' target으로 소스를 빌드해서 Debian 패키지 파일을 생성합니다.
-  - GitHub에서 소스를 받아서 Debian 패키지 빌드하는 절차:
+2.다운로드한 파일의 압축을 푼 후, 빌드하고 설치합니다.
 ```sh
-$ git clone git://github.com/OpenTSDB/opentsdb.git 
-$ cd opentsdb 
-$ ./build.sh debian 
-```
-
-2.다운로드한 Debian 패캐지 파일을 설치합니다. 소스를 빌드한 경우, 패키지 파일이 'build/opentsdb-x.x.x/' 디렉토리 아래에 만들어집니다.
-```sh
-$ sudo dpkg -i opentsdb-2.2.0_all.deb
+$ tar xzf opentsdb-2.2.0.tar.gz -C ~/
+$ cd ~/opentsdb-2.2.0
+$ ./build.sh
+$ cd build
+$ make install
 ```
 
 3.Debian 패키지를 설치하면 OpenTSDB 패키지는 '/usr/share/opentsdb/' 디렉토리에 설치되고, 환경설정파일은 '/etc/opentsdb/opentsdb.conf'에 있고, 부팅시에 자동으로 OpenTSDB 서버가 실행됩니다.
