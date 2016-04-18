@@ -11,11 +11,11 @@
 ### 호스트 구성
 
 * 호스트이름과 IP 주소 구성
-  - 192.168.0.211 : server01
-  - 192.168.0.212 : server02
-  - 192.168.0.213 : server03
+  - server01 : 192.168.0.211
+  - server01 : 192.168.0.212
+  - server01 : 192.168.0.213
 * 호스트별 서버 구성
-  - server01 : Master 노드, Hadoop NameNode, SecondaryNameNode, DataNode, YARN ResourceManager, NodeManager
+  - server01 : Master 노드, Hadoop NameNode/SecondaryNameNode/DataNode, YARN ResourceManager/NodeManager
   - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager
   - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager
 
