@@ -1,7 +1,8 @@
-### Ubuntu에 OpenTSDB 설치와 분산환경 구성 안내
+### Ubuntu Server 14.04에 OpenTSDB 설치와 분산환경 구성 안내
 
 ##### 설치 환경
-* 운영체제: Ubuntu 14.04, x86 64-bit
+
+* 운영체제: Ubuntu Server 14.04, x86 64-bit
 * 사용 소프트웨어 버전
   - Oracle JDK 1.7
   - GnuPlot 4.6
@@ -11,6 +12,7 @@
   - OpenTSDB 2.2.0
 
 ##### 호스트 구성
+
 * 호스트이름과 IP 주소 구성
   - server01 : 192.168.0.211
   - server01 : 192.168.0.212
@@ -20,30 +22,28 @@
   - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase backup Master/RegionServer, ZooKeeper
   - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer, ZooKeeper
 
-##### JDK(Java Development Kit) 설치하기
-Hadoop, HBase, ZooKeeper, OpenTSDB 등 서버들이 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다. Open JDK는 Oracle JDK보다 성능도 나쁘고 설치할 프로그램들과 여러가지 버그를 만들기때문에 Oracle JDK를 사용합니다.
+##### (공통) JDK(Java Development Kit) 설치하기
 
-1.JDK 설치 여부를 확인합니다.
+Hadoop, HBase, ZooKeeper, OpenTSDB 등 서버들이 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요하다. Open JDK는 Oracle JDK보다 성능도 나쁘고 설치할 프로그램들과 여러가지 버그를 만들기때문에 Oracle JDK를 사용한다.
+
+1.JDK 설치 여부를 확인하고, Open JDK가 설치되어 있다면 제거한다.
 ```sh
 $ java -version
 java version "1.7.0_95"
 OpenJDK Runtime Environment (IcedTea 2.6.4) (7u95-2.6.4-0ubuntu0.14.04.2)
 OpenJDK 64-Bit Server VM (build 24.95-b01, mixed mode)
+$ sudo apt-get purge openjdk*
+$ sudo apt-get autoremove
 ```
 
-2.OpenJDK가 이미 설치되어 있다면, 제거합니다. JDK가 설치되어 있지 않다면, PPA repository를 추가하고 Oracle JDK를 설치합니다.
-  - Open JDK 제거
-```sh
-$ sudo apt-get purge openjdk*
-```
-  - Oracle JDK 설치
+2.Oracle JDK가 설치되어 있지 않다면, PPA repository를 추가하고 설치한다.
 ```sh
 $ sudo add-apt-repository ppa:webupd8team/java
 $ sudo apt-get update
 $ sudo apt-get install oracle-java7-installer
 ```
 
-3.JDK 버전을 확인합니다.
+3.JDK 버전을 확인한다.
 ```sh
 $ java -version
 java version "1.7.0_80"
@@ -51,37 +51,59 @@ Java(TM) SE Runtime Environment (build 1.7.0_80-b15)
 Java HotSpot(TM) 64-Bit Server VM (build 24.80-b11, mixed mode)
 ```
 
-4.편의를 위해서 Oracle JDK를 'default-java'로 링크합니다.
+4.편의를 위해서 Oracle JDK 디렉토리를 'default-java'로 링크한다.
 ```sh
 $ sudo ln -s /usr/lib/jvm/java-7-oracle /usr/lib/jvm/default-java
 ```
 
-##### GnuPlot 설치하기
-OpenTSDB에서 그래프 그릴 때 사용됩니다.
+##### (공통) Hadoop 설치와 환경설정
 
-1.패키지 설치 명령으로 GnuPlot을 설치합니다.
+* 아래 링크의 문서를 따라서 Hadoop을 설치한다.
+  - Ubuntu Server 14.04에 Hadoop 설치하기
+    - https://github.com/zerover0/projects/blob/master/hadoop/hadoop_install_on_ubuntu.md
+  - Raspberry Pi에 Hadoop 설치하기
+    - https://github.com/zerover0/projects/blob/master/hadoop/hadoop_install_on_rpi.md
+
+##### (master) GnuPlot 설치하기
+
+OpenTSDB Web UI 사이트에서 그래프를 그릴 때 사용된다.
+
+1.패키지 설치 명령으로 GnuPlot을 설치한다.
 ```sh
 $ sudo apt-get update 
 $ sudo apt-get install gnuplot 
 ```
 
-##### ZooKeeper 설치하기
-ZooKeeper는 분산 서버들 간에 조정자 역할을 해주는데, HBase가 분산 환경에서 작동할 때 필요합니다.
+##### (master) ZooKeeper 설치와 환경설정
 
-(master) ZooKeeper 프로그램 설치와 환경설정
+ZooKeeper는 분산 서버들 간에 조정자 역할을 해주는데, HBase가 분산 환경에서 작동할 때 필요하다.
+
 1.ZooKeeper 홈페이지에서 3.4.8 릴리즈 파일을 다운로드한다.
-- http://zookeeper.apache.org
+  - http://zookeeper.apache.org
+
 2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'zookeeper'로 바꾼다.
+```sh
 $ tar xzf zookeeper-3.4.8.tar.gz -C ~/app/
 $ mv ~/app/zookeeper-3.4.8 ~/app/zookeeper
+```
+
 3.'zoo.cfg' 샘플 파일을 복사해서 ZooKeeper 환경설정 파일을 만든다.
+```sh
 $ cp ~/app/zookeeper/conf/zoo_sample.cfg ~/app/zookeeper/conf/zoo.cfg
+```
+
 4.'zoo.cfg' 파일을 열어서 'dataDir' 설정을 수정한 후에 저장한다. 'dataDir'은 ZooKeeper의 데이터가 저장될 로컬 디렉토리이이다.
+```sh
 $ vi ~/app/zookeeper/conf/zoo.cfg
 dataDir=/home/hadoop/data/zookeeper
+```
+
 5.master 노드에 있는 ZooKeeper 디렉토리 전체를 slave 노드로 복사한다.
+```sh
 $ scp -r ~/app/zookeeper hadoop@server02:~/app/
 $ scp -r ~/app/zookeeper hadoop@server03:~/app/
+```
+
 6.ZooKeeper 서버를 실행한다.
 $ ~/app/zookeeper/bin/zkServer.sh start
 7.ZooKeeper 프로세스가 작동하는지 확인한다.
@@ -108,7 +130,8 @@ Connection closed by foreign host.
 9.ZooKeeper 프로세스를 종료하려면, 아래 명령을 실행한다.
 $ ~/app/zookeeper/bin/zkServer.sh stop
 
-(master) HBase 프로그램 설치와 환경설정
+##### (master) HBase 설치와 환경설정
+
 1.HBase 홈페이지에서 1.1.4 릴리즈 파일을 다운로드한다.
 - http://hbase.apache.org
 2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'hbase'로 바꾼다.
@@ -193,12 +216,12 @@ $ ~/app/hbase/bin/start-hbase.sh
 $ ~/app/hbase/bin/stop-hbase.sh
 ```
 
-##### OpenTSDB 설치하기
+##### (master) OpenTSDB 설치와 환경설정
 
-1.다음 주소에서 OpenTSDB의 릴리즈 파일을 다운로드합니다.
+1.다음 주소에서 OpenTSDB의 릴리즈 파일을 다운로드한다.
   - https://github.com/OpenTSDB/opentsdb/releases
 
-2.다운로드한 파일의 압축을 푼 후, 빌드하고 설치합니다.
+2.다운로드한 파일의 압축을 푼 후, 빌드하고 설치한다.
 ```sh
 $ tar xzf opentsdb-2.2.0.tar.gz -C ~/
 $ cd ~/opentsdb-2.2.0
@@ -207,14 +230,14 @@ $ cd build
 $ sudo make install
 ```
 
-3.OpenTSDB 프로그램은 '/usr/local/share/opentsdb/' 디렉토리에 설치됩니다. 환경설정 파일인 'opentsdb.conf'을 열어서 필요한 옵션을 설정하고 저장합니다.
+3.OpenTSDB 프로그램은 '/usr/local/share/opentsdb/' 디렉토리에 설치된다. 환경설정 파일인 'opentsdb.conf'을 열어서 필요한 옵션을 설정하고 저장한다.
   - tsd.core.auto_create_metrics : true = 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric 추가
 ```sh
 $ sudo vi /usr/local/share/opentsdb/etc/opentsdb/opentsdb.conf
 tsd.core.auto_create_metrics = true
 ```
 
-4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행해야 합니다.
+4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행한다.
 ```sh
 $ export JAVA_HOME=/usr/lib/jvm/default-java
 $ export HBASE_HOME=/usr/local/hbase 
@@ -251,27 +274,32 @@ create 'tsdb-meta',
 Hbase::Table - tsdb-meta
 ```
 
-5.TSD 데몬을 실행해서 문제가 없는지 확인합니다.
+5.TSD 데몬을 실행한다.
 ```sh
 $ /usr/share/opentsdb/bin/tsdb tsd
 (중간 생략)
 2016-04-15 20:54:56,124 INFO  [main] TSDMain: Ready to serve on /0.0.0.0:4242
 ```
-  - 만일, 아래와 같은 에러가 나면, '/tmp/opentsdb' 디렉토리를 지우고 다시 실행합니다.
+  - 만일, 아래와 같은 에러가 나면, '/tmp/opentsdb' 디렉토리를 지우고 다시 실행한다.
 ```
 2016-04-15 20:53:44,517 INFO  [main] Config: Successfully loaded configuration file: /etc/opentsdb/opentsdb.conf
 Cannot write to directory [/tmp/opentsdb]
 ```
 
-6.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다.
+6.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB Web UI 사이트를 통해서 확인한다.
   - 호스트 주소가 '192.168.0.3'인 경우 : http://192.168.0.3:4242
 
-##### Grafana에서 OpenTSDB lookup API 사용을 위한 설정
+##### (master) Grafana에서 OpenTSDB lookup API 사용을 위한 설정
 
-1.Grafana에서 템플릿을 만들 때 변수가 자동으로 나타나도록 하려면 'opentsdb.conf'에 아래 설정을 추가하여 활성화해야 합니다.
+1.Grafana에서 템플릿을 만들 때 변수가 자동으로 나타나도록 하려면 'opentsdb.conf'에 아래 설정을 추가하여 활성화한다.
   - tsd.core.meta.enable_realtime_ts = true
 
-2.OpenTSDB에 있는 time series 데이터의 메타데이터를 나타나도록 하려면 아래 명령을 OpenTSDB 서버가 실행 중인 곳에서 실행합니다.
+2.OpenTSDB에 있는 time series 데이터의 메타데이터를 나타나도록 하려면 아래 명령을 OpenTSDB 서버가 실행 중인 호스트에서 실행한다.
 ```sh
 $ /usr/share/opentsdb/bin/tsdb uid metasync
 ```
+
+##### (공통) ZooKeeper를 부팅할 때 자동 실행하기
+
+ZooKeepr는 다른 서버 프로그램들이 실행되기 이전에 독립적으로 실행되어야하므로 부팅할 때 자동으로 실행되도록 설정한다. 부팅할 때 실행하는 여러가지 방법 가운데, 아래는 'crontab'을 이용하는 방법이다.
+
