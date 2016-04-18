@@ -68,70 +68,129 @@ $ sudo apt-get install gnuplot
 ##### ZooKeeper 설치하기
 ZooKeeper는 분산 서버들 간에 조정자 역할을 해주는데, HBase가 분산 환경에서 작동할 때 필요합니다.
 
-1.Telnet으로 ZooKeeper 서버의 동작여부 확인이 가능합니다. Telnet 연결이 거부되거나 바로 끊어지지 않으면 'stat' 명령을 입력해서 ZooKeeper 서버 응답을 받을 수 있습니다.
-```sh
+(master) ZooKeeper 프로그램 설치와 환경설정
+1.ZooKeeper 홈페이지에서 3.4.8 릴리즈 파일을 다운로드한다.
+- http://zookeeper.apache.org
+2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'zookeeper'로 바꾼다.
+$ tar xzf zookeeper-3.4.8.tar.gz -C ~/app/
+$ mv ~/app/zookeeper-3.4.8 ~/app/zookeeper
+3.'zoo.cfg' 샘플 파일을 복사해서 ZooKeeper 환경설정 파일을 만든다.
+$ cp ~/app/zookeeper/conf/zoo_sample.cfg ~/app/zookeeper/conf/zoo.cfg
+4.'zoo.cfg' 파일을 열어서 'dataDir' 설정을 수정한 후에 저장한다. 'dataDir'은 ZooKeeper의 데이터가 저장될 로컬 디렉토리이이다.
+$ vi ~/app/zookeeper/conf/zoo.cfg
+dataDir=/home/hadoop/data/zookeeper
+5.master 노드에 있는 ZooKeeper 디렉토리 전체를 slave 노드로 복사한다.
+$ scp -r ~/app/zookeeper hadoop@server02:~/app/
+$ scp -r ~/app/zookeeper hadoop@server03:~/app/
+6.ZooKeeper 서버를 실행한다.
+$ ~/app/zookeeper/bin/zkServer.sh start
+7.ZooKeeper 프로세스가 작동하는지 확인한다.
+$ jps
+1220 QuorumPeerMain
+8.telnet 명령으로 ZooKeeper 서버에 연결해서 'stat' 명령으로 작동 중인지 확인하다.
 $ telnet localhost 2181
 Trying 127.0.0.1...
 Connected to localhost.
 Escape character is '^]'.
 stat
-Zookeeper version: 3.4.6-1569965, built on 02/20/2014 09:09 GMT
+Zookeeper version: 3.4.8--1, built on 02/06/2016 03:18 GMT
 Clients:
- /127.0.0.1:38470[1](queued=0,recved=124288,sent=124288)
-```
+ /127.0.0.1:56211[0](queued=0,recved=1,sent=0)
+Latency min/avg/max: 0/0/0
+Received: 1
+Sent: 0
+Connections: 1
+Outstanding: 0
+Zxid: 0x0
+Mode: standalone
+Node count: 4
+Connection closed by foreign host.
+9.ZooKeeper 프로세스를 종료하려면, 아래 명령을 실행한다.
+$ ~/app/zookeeper/bin/zkServer.sh stop
 
-2.ZooKeeper가 설치되어 있지 않다면, 패키지 설치 명령으로 ZooKeeper 릴리즈와 환경설정 파일 패키지를 설치합니다.
+(master) HBase 프로그램 설치와 환경설정
+1.HBase 홈페이지에서 1.1.4 릴리즈 파일을 다운로드한다.
+- http://hbase.apache.org
+2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'hbase'로 바꾼다.
+$ tar xzf hbase-1.1.4-bin.tar.gz -C ~/app/
+$ mv ~/app/hbase-1.1.4 ~/app/hbase
+4.'regionservers' 파일을 열어서 RegionServer가 실행될 호스트이름을 한줄에 하나씩 입력하고 저장한다. 아래 구성은 HBase Master인 server01에는 RegionServer가 실행되지 않고 나머지 slave 노드에 RegionServer가 실행되는 것을 가정한 예제이다.
+$ vi ~/app/hbase/conf/regionservers
+server01
+server02
+server03
+5.server02를 HBase의 백업 Master로 설정하기 위해서 'backup-masters'라는 파일을 만들어서 백업 Master가 실행될 호스트이름을 추가한다.
+$ vi ~/app/hbase/conf/backup-masters
+server02
+6.Hadoop HDFS 설정을 참조하기 위해서 'hdfs-site.xml' 파일을 Hadoop 디렉토리에서 HBase 디렉토리로 복사한다.
+$ cp ~/app/hadoop/etc/hadoop/hdfs-site.xml ~/app/hbase/conf/
+7.'hadoop-env.sh' 파일을 열어서 'JAVA_HOME'과 'HBASE_CLASSPATH'을 수정한 후 저장한다.
+- LD_LIBRARY_PATH : Hadoop native library 경로를 추가
+- HBASE_CLASSPATH : HADOOP_CONF_DIR을 가리키도록 설정
+$ vi ~/app/hbase/conf/hbase-env.sh
+export LD_LIBRARY_PATH=/home/hadoop/app/hadoop/lib/native
+export JAVA_HOME=/usr/lib/jvm/default-java
+export HBASE_CLASSPATH=/home/hadoop/app/hadoop/etc/hadoop
+export HBASE_LOG_DIR=/home/hadoop/data/hbase/logs
+8.'hdfs-site.xml' 파일을 열어서 아래 내용을 추가한다.
+- hbase.rootdir : HDFS 서비스 URI에 HBase 파일 저장 디렉토리 이름을 추가하여 만든 HDFS의 HBase 루트 디렉토리 URI
+- hbase.cluster.distributed : true로 설정하면 분산환경에서 동작을 의미
+- hbase.zookeeper.quorum : ZooKeeper 프로세스가 실행 중인 호스트이름
+- hbase.zookeeper.property.dataDir : ZooKeepr 데이터가 저장될 로컬 디렉토리
+$ vi ~/app/hbase/conf/hbase-site.xml
+<configuration>
+  <property>
+    <name>hbase.rootdir</name>
+    <value>hdfs://server01:9000/hbase</value>
+  </property>
+  <property>
+    <name>hbase.cluster.distributed</name>
+    <value>true</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.quorum</name>
+    <value>server01,server02,server03</value>
+  </property>
+  <property>
+    <name>hbase.zookeeper.property.dataDir</name>
+    <value>/home/hadoop/data/zookeeper</value>
+  </property>
+</configuration>
+9.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
+$ scp -r ~/app/hbase hadoop@server02:~/app/
+$ scp -r ~/app/hbase hadoop@server03:~/app/
+10.HBase 프로세스를 실행한다.
+$ ~/app/hbase/bin/start-hbase.sh
+10.HBase 프로세스가 작동하는지 확인한다.
+(server01)$ jps
+4607 HRegionServer
+3903 NodeManager
+3765 ResourceManager
+3388 DataNode
+843 QuorumPeerMain
+3584 SecondaryNameNode
+3246 NameNode
+4475 HMaster
+(server02)$ jps
+4607 HRegionServer
+3903 NodeManager
+3388 DataNode
+843 QuorumPeerMain
+4475 HMaster
+(server03)$jps
+4607 HRegionServer
+3903 NodeManager
+3388 DataNode
+843 QuorumPeerMain
+11.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
+- HBase Master Web UI : http://server01:16010
+- HBase backup Master Web UI : http://server02:16010
+- HBase RegionServer Web UI : http://server01:16030
+- HBase RegionServer Web UI : http://server02:16030
+- HBase RegionServer Web UI : http://server03:16030
+12.HBase 프로세스를 종료하려면, 아래 명령을 실행한다.
 ```sh
-$ sudo apt-get update 
-$ sudo apt-get install zookeeper zookeeperd 
-```
-
-3.ZooKeeper를 성공적으로 설치하면, 부팅할 때 ZooKeeper 서버는 자동으로 실행되고, 기본 환경설정 파일인 '/etc/zookeeper/conf/zoo.cfg'에 ZooKeeper 데이터 디렉토리는 '/var/lib/zookeeper'로 기본 설정됩니다. 
-```
-dataDir=/var/lib/zookeeper
-clientPort=2181
-```
-
-##### HBase 분산환경에서 설치하기
-
-1.다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
-  - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
-
-2.다운로드한 HBase 릴리즈 파일의 압축을 푼 후, 새로 생성된 디렉토리를 '/usr/local/hbase'라는 이름으로 변경해서 이동합니다.
-```sh
-$ tar xzvf hbase-1.1.3-bin.tar.gz 
-$ sudo mv hbase-1.1.3 /usr/local/hbase
-```
-
-3.'/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리와 로그 디렉토리를 다음과 같이 지정합니다.
-```sh
-export JAVA_HOME=/usr/java/jdk1.8/
-export HBASE_LOG_DIR=/tmp/hbase/logs 
-```
-
-4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 rootdir 설정과 ZooKeeper 데이터 디렉토리를 설정합니다.</br>
-다음 설정은 로컬 파일시스템을 이용한 HBase 설정의 예입니다.
-```
-<configuration> 
-  <property> 
-    <name>hbase.rootdir</name> 
-    <value>file:///usr/local/hbase</value> 
-  </property> 
-  <property> 
-    <name>hbase.zookeeper.property.dataDir</name> 
-    <value>/var/lib/zookeeper</value> 
-  </property> 
-</configuration> 
-```
-5.다음 명령을 실행해서 HBase 서버를 실행합니다.
-```sh
-$ /usr/local/hbase/bin/start-hbase.sh
-```
-
-6.HBase 서버를 실행해서 에러가 없으면, 부팅시 자동으로 실행되도록 '/etc/rc.local' 파일에 다음 내용을 추가합니다.
-```sh
-$sudo vi /etc/rc.local
-/usr/local/hbase/bin/start-hbase.sh
+$ ~/app/hbase/bin/stop-hbase.sh
 ```
 
 ##### OpenTSDB 설치하기
