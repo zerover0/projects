@@ -92,7 +92,8 @@ $ mv ~/app/zookeeper-3.4.8 ~/app/zookeeper
 $ cp ~/app/zookeeper/conf/zoo_sample.cfg ~/app/zookeeper/conf/zoo.cfg
 ```
 
-4.'zoo.cfg' 파일을 열어서 'dataDir' 설정을 수정한 후에 저장한다. 'dataDir'은 ZooKeeper의 데이터가 저장될 로컬 디렉토리이이다.
+4.'zoo.cfg' 파일을 열어서 'dataDir' 설정을 수정한 후에 저장한다.
+  - dataDir : ZooKeeper의 데이터를 저장할 로컬 디렉토리
 ```sh
 $ vi ~/app/zookeeper/conf/zoo.cfg
 dataDir=/home/hadoop/data/zookeeper
@@ -152,7 +153,7 @@ $ tar xzf hbase-1.1.4-bin.tar.gz -C ~/app/
 $ mv ~/app/hbase-1.1.4 ~/app/hbase
 ```
 
-4.'regionservers' 파일을 열어서 RegionServer가 실행될 호스트이름을 한줄에 하나씩 입력하고 저장한다. 아래 구성은 HBase Master인 server01에는 RegionServer가 실행되지 않고 나머지 slave 노드에 RegionServer가 실행되는 것을 가정한 예제이다.
+4.'regionservers' 파일을 열어서 RegionServer가 실행될 호스트이름을 한줄에 하나씩 입력하고 저장한다.
 ```sh
 $ vi ~/app/hbase/conf/regionservers
 server01
@@ -160,7 +161,7 @@ server02
 server03
 ```
 
-5.server02를 HBase의 백업 Master로 설정하기 위해서 'backup-masters'라는 파일을 만들어서 백업 Master가 실행될 호스트이름을 추가한다.
+5.server02를 HBase의 백업 Master로 설정하기 위해서 'backup-masters'라는 파일을 만들어서 호스트이름을 추가한다.
 ```sh
 $ vi ~/app/hbase/conf/backup-masters
 server02
@@ -171,22 +172,22 @@ server02
 $ cp ~/app/hadoop/etc/hadoop/hdfs-site.xml ~/app/hbase/conf/
 ```
 
-7.'hbase.sh' 파일을 열어서 'JAVA_HOME'과 'HBASE_CLASSPATH'을 수정한 후 저장한다.
+7.'hbase.sh' 파일을 열어서 'LD_LIBRARY_PATH'를 추가하고, 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_LOG_DIR'을 찾아서 수정한 후 저장한다.
   - LD_LIBRARY_PATH : Hadoop native library 경로를 추가
-  - HBASE_CLASSPATH : HADOOP_CONF_DIR을 가리키도록 설정
+  - HBASE_CLASSPATH : HADOOP_CONF_DIR을 가리키도록 설정($HADOOP_CONF_DIR/hadoop-env.sh 이용)
 ```sh
 $ vi ~/app/hbase/conf/hbase-env.sh
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/hadoop/app/hadoop/lib/native
 export JAVA_HOME=/usr/lib/jvm/default-java
-export HBASE_CLASSPATH=$HBASE_CLASSPATH:/home/hadoop/app/hadoop/etc/hadoop
+export HBASE_CLASSPATH=/home/hadoop/app/hadoop/etc/hadoop
 export HBASE_LOG_DIR=/home/hadoop/data/hbase/logs
 ```
 
 8.'hdfs-site.xml' 파일을 열어서 아래 내용을 추가한다.
-  - hbase.rootdir : HDFS 서비스 URI에 HBase 파일 저장 디렉토리 이름을 추가하여 만든 HDFS의 HBase 루트 디렉토리 URI
-  - hbase.cluster.distributed : true로 설정하면 분산환경에서 동작을 의미
-  - hbase.zookeeper.quorum : ZooKeeper 프로세스가 실행 중인 호스트이름
-  - hbase.zookeeper.property.dataDir : ZooKeepr 데이터가 저장될 로컬 디렉토리
+  - hbase.rootdir : HDFS의 HBase 루트 디렉토리 URI
+  - hbase.cluster.distributed : true = 분산환경에서 동작을 의미
+  - hbase.zookeeper.quorum : ZooKeeper 프로세스가 실행 중인 호스트이름 목록
+  - hbase.zookeeper.property.dataDir : ZooKeepr 데이터를 저장할 로컬 디렉토리
 ```sh
 $ vi ~/app/hbase/conf/hbase-site.xml
 <configuration>
@@ -235,6 +236,7 @@ server02:~$ jps
 4607 HRegionServer
 3903 NodeManager
 3388 DataNode
+2548 HMaster
 843 QuorumPeerMain
 4475 HMaster
 server03:~$ jps
