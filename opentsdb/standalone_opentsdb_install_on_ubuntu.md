@@ -128,18 +128,22 @@ $ tar xzf opentsdb-2.2.0.tar.gz -C ~/
 $ cd ~/opentsdb-2.2.0
 $ ./build.sh
 $ cd build
-$ make install
+$ sudo make install
 ```
 
-3.Debian 패키지를 설치하면 OpenTSDB 패키지는 '/usr/share/opentsdb/' 디렉토리에 설치되고, 환경설정파일은 '/etc/opentsdb/opentsdb.conf'에 있고, 부팅시에 자동으로 OpenTSDB 서버가 실행됩니다.
+3.OpenTSDB 프로그램은 '/usr/local/share/opentsdb/' 디렉토리에 설치됩니다. 환경설정 파일인 'opentsdb.conf'을 열어서 필요한 옵션을 설정하고 저장합니다.
+  - tsd.core.auto_create_metrics : true = 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric 추가
+```sh
+$ sudo vi /usr/local/share/opentsdb/etc/opentsdb/opentsdb.conf
+tsd.core.auto_create_metrics = true
+```
 
 4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행해야 합니다.
 ```sh
 $ export JAVA_HOME=/usr/lib/jvm/default-java
 $ export HBASE_HOME=/usr/local/hbase 
 $ export COMPRESSION=NONE 
-$ cd /usr/share/opentsdb/tools/
-$ ./create_table.sh
+$ /usr/share/opentsdb/tools/create_table.sh
 2016-04-15 11:24:19,339 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 HBase Shell; enter 'help<RETURN>' for list of supported commands.
 Type "exit<RETURN>" to leave the HBase Shell
@@ -183,14 +187,8 @@ $ /usr/share/opentsdb/bin/tsdb tsd
 Cannot write to directory [/tmp/opentsdb]
 ```
 
-6.추가로 필요한 환경설정을 '/etc/opentsdb/opentsdb.conf'에 지정합니다. 
-  - 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric을 추가해주는 옵션:
-    - tsd.core.auto_create_metrics = true
-
-7.OpenTSDB 서비스를 재시작한 후, 서비스가 정상적으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다. HBase 서버를 실행한 후 초기화하는데까지 걸리는 시간을 고려해서 약 1분 정도 후에 OpenTSDB 서비스를 실행합니다. 호스트 주소가 '192.168.0.3'인 경우, 관리페이지 주소는 'http://192.168.0.3:4242' 입니다.
-```sh
-$ sudo service opentsdb restart
-```
+6.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다.
+  - 호스트 주소가 '192.168.0.3'인 경우 : http://192.168.0.3:4242
 
 ##### Grafana에서 OpenTSDB lookup API 사용을 위한 설정
 
