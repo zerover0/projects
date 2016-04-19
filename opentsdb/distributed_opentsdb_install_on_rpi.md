@@ -18,7 +18,7 @@
   - server01 : 192.168.0.213
 * 호스트별 서버 구성
   - server01 : Master 노드, Hadoop NameNode/SecondaryNameNode/DataNode, YARN ResourceManager/NodeManager, HBase Master/RegionServer, ZooKeeper, OpenTSDB
-  - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase backup Master/RegionServer, ZooKeeper
+  - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer, ZooKeeper
   - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer, ZooKeeper
 
 ##### JDK(Java Development Kit) 설치하기
