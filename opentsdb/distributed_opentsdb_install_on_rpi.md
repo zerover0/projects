@@ -265,10 +265,11 @@ $ sudo make install
 
 3.OpenTSDB 프로그램은 '/usr/local/share/opentsdb/' 디렉토리에 설치된다. 환경설정 파일인 'opentsdb.conf'을 열어서 필요한 옵션을 설정하고 저장한다.
   - tsd.core.auto_create_metrics : true = 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric 추가
+  - tsd.storage.fix_duplicates : true = 같은 시간에 중복된 데이터가 존재하는 경우 마지막 입력된 데이터만 쓰임
 ```sh
 $ sudo vi /usr/local/share/opentsdb/etc/opentsdb/opentsdb.conf
 tsd.core.auto_create_metrics = true
-```
+tsd.storage.fix_duplicates = true
 
 4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행한다.
 ```sh
