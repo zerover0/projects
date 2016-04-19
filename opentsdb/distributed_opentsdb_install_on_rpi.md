@@ -270,6 +270,7 @@ $ sudo make install
 $ sudo vi /usr/local/share/opentsdb/etc/opentsdb/opentsdb.conf
 tsd.core.auto_create_metrics = true
 tsd.storage.fix_duplicates = true
+```
 
 4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행한다.
 ```sh
