@@ -8,7 +8,7 @@
   - GnuPlot 4.6
   - Hadoop 2.6.4
   - ZooKeeper 3.4.8
-  - HBase 1.1.4
+  - HBase 1.2.1
   - OpenTSDB 2.2.0
 
 ##### 호스트 구성
@@ -157,18 +157,12 @@ server02
 server03
 ```
 
-5.server02를 HBase의 백업 Master로 설정하기 위해서 'backup-masters'라는 파일을 만들어서 호스트이름을 추가한다.
-```sh
-$ vi ~/app/hbase/conf/backup-masters
-server02
-```
-
-6.Hadoop HDFS 설정을 참조하기 위해서 'hdfs-site.xml' 파일을 Hadoop 디렉토리에서 HBase 디렉토리로 복사한다.
+5.Hadoop HDFS 설정을 참조하기 위해서 'hdfs-site.xml' 파일을 Hadoop 디렉토리에서 HBase 디렉토리로 복사한다.
 ```sh
 $ cp ~/app/hadoop/etc/hadoop/hdfs-site.xml ~/app/hbase/conf/
 ```
 
-7.'hbase.sh' 파일을 열어서 'LD_LIBRARY_PATH'를 추가하고, 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_LOG_DIR'을 찾아서 수정한 후 저장한다.
+6.'hbase-env.sh' 파일을 열어서 'LD_LIBRARY_PATH'를 추가하고, 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_LOG_DIR'을 찾아서 수정한 후 저장한다.
   - LD_LIBRARY_PATH : Hadoop native library 경로를 추가
   - HBASE_CLASSPATH : HADOOP_CONF_DIR을 가리키도록 설정($HADOOP_CONF_DIR/hadoop-env.sh 이용)
 ```sh
@@ -177,9 +171,10 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/hadoop/app/hadoop/lib/native
 export JAVA_HOME=/usr/lib/jvm/default-java
 export HBASE_CLASSPATH=/home/hadoop/app/hadoop/etc/hadoop
 export HBASE_LOG_DIR=/home/hadoop/data/hbase/logs
+export HBASE_MANAGES_ZK=false
 ```
 
-8.'hdfs-site.xml' 파일을 열어서 아래 내용을 추가한다.
+7.'hbase-site.xml' 파일을 열어서 아래 내용을 추가한다.
   - hbase.rootdir : HDFS의 HBase 루트 디렉토리 URI
   - hbase.cluster.distributed : true = 분산환경에서 동작을 의미
   - hbase.zookeeper.quorum : ZooKeeper 프로세스가 실행 중인 호스트이름 목록
@@ -206,13 +201,13 @@ $ vi ~/app/hbase/conf/hbase-site.xml
 </configuration>
 ```
 
-9.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
+8.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
 ```sh
 $ scp -r ~/app/hbase hadoop@server02:~/app/
 $ scp -r ~/app/hbase hadoop@server03:~/app/
 ```
 
-10.HBase 프로세스를 실행한다.
+9.HBase 프로세스를 실행한다.
 ```sh
 $ ~/app/hbase/bin/start-hbase.sh
 ```
