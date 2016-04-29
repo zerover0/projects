@@ -7,3 +7,4 @@
 * 데이터 검색과 관리를 위한 Django 설치와 서버 앱 구현
   - Django 서버 앱 위치: /home/tinyos16/KETI/EE/source/ee/
   - Django 서버 주소: http://49.254.13.34:8000/
+  - EE 데이터를 위치, 그룹, SIC 유형으로 분류하고 검색할 수 있게 하는 것이 목표이다.
