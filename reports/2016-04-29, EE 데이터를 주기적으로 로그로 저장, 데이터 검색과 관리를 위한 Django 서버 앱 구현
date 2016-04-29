@@ -1,0 +1,9 @@
+### 2016-04-29 report
+
+* EE 데이터를 주기적으로 로그로 저장
+  - 오라클 데이터베이스에서 EE 데이터를 1시간 주기로  로그 파일로 저장
+    - crontab에 1시간 주기로 로그 저장 앱을 실행하도록 설정
+    - 저장위치: /home/tinyos16/KETI/EE/data/
+* 데이터 검색과 관리를 위한 Django 설치와 서버 앱 구현
+  - Django 서버 앱 위치: /home/tinyos16/KETI/EE/source/ee/
+  - Django 서버 주소: http://49.254.13.34:8000/
