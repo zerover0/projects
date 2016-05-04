@@ -19,7 +19,7 @@
       - GitHub: https://github.com/jeonghoonkang/keti/tree/master/EE/aimir/python
 * Grafana dashboard 추가
   - 검침실패 실시간 모니터링 dashboard 추가
-    - Dashboard URL: http://ee:3000/dashboard/db/geomcimsilpae-silsigan-bunseog
+    - Dashboard URL: http://49.254.13.34:3000/dashboard/db/geomcimsilpae-silsigan-bunseog
   - Dashboard script 추가
     - MDS_ID를 인자로 받아서 해당 미터기의 유효전력량 그래프와 테이블, 데이터 오류 이력 테이블 출력
     - 스크립트 파일위치: /usr/share/grafana/public/dashboards/ee.js
