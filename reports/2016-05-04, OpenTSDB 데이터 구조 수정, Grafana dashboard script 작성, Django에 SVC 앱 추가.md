@@ -17,11 +17,14 @@
     - 로그 파일을 읽어서 OpenTSDB에 저장
       - 데이터 저장 프로그램: tsdb_lp_put_test.py, tsdb_lp_month_put_test.py
       - GitHub: https://github.com/jeonghoonkang/keti/tree/master/EE/aimir/python
-* Grafana dashboard script 작성
-  - MDS_ID를 인자로 받아서 유효전력량 그래프와 테이블, 데이터 오류 이력 테이블 출력
-  - 스크립트 파일위치: /usr/share/grafana/public/dashboards/ee.js
-  - 스크립트 URL: http://49.254.13.34:3000/dashboard/script/ee.js?mdsid=01221401193-0001%7C01221281194-0001%7C01221281194-0002
-    - 쿼리문자열에서 'mdsid=' 뒤에 '|' 기호를 써서 보고싶은 MDS_ID들을 연결해서 나열하면 함께 보여진다.
+* Grafana dashboard 추가
+  - 검침실패 실시간 모니터링 dashboard 추가
+    - Dashboard URL: http://ee:3000/dashboard/db/geomcimsilpae-silsigan-bunseog
+  - Dashboard script 추가
+    - MDS_ID를 인자로 받아서 해당 미터기의 유효전력량 그래프와 테이블, 데이터 오류 이력 테이블 출력
+    - 스크립트 파일위치: /usr/share/grafana/public/dashboards/ee.js
+    - 스크립트 URL: http://49.254.13.34:3000/dashboard/script/ee.js?mdsid=01221401193-0001%7C01221281194-0001%7C01221281194-0002
+      - 쿼리문자열에서 'mdsid=' 뒤에 '|' 기호를 써서 보고싶은 MDS_ID들을 연결해서 나열하면 함께 보여진다.
   - GitHub: https://github.com/jeonghoonkang/keti/tree/master/EE/aimir/grafana/script/
 * Django에 SVC 앱 추가
   - 임박사님이 만드신 Scikit-learn SVC 알고리즘을 사용한 유형판별 코드를 Django 앱으로 연결시켜 시험함
