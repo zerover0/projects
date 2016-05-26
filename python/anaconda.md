@@ -18,3 +18,11 @@ NOTE: If you select the option to not add the Anaconda directory to your bash sh
 Finally, close and re-open your terminal window for the changes to take effect.
 
 > Source: https://docs.continuum.io/anaconda/install
+
+### Updating from older Anaconda versions
+
+You can easily update to the latest Anaconda version by updating conda, then Anaconda as follows:
+```sh
+conda update conda
+conda update anaconda
+```
