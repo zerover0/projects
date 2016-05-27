@@ -41,7 +41,7 @@ pandas 1.18.0 이후 버전 테스트할 때 아래와 같은 문제가 발생�
 ```sh
 pip install --upgrade python-dateutil
 ```
-```
+```python
 ======================================================================
 ERROR: test_round_trip_frame (pandas.io.tests.test_clipboard.TestClipboard)
 ----------------------------------------------------------------------
