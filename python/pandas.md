@@ -39,8 +39,12 @@ OK (SKIP=117)
 
 pandas 1.18.0 이후 버전 테스트할 때 아래와 같은 날짜 파싱 문제가 발생하면 Python dateutil 패키지를 업데이트해야한다.
 특히, 최근에 dateutil 패키지가 2.5.0 버전으로 업그레이드하면서 문제가 발생했는데, 2.5.3 버전에서 수정되었다.
+pandas 1.18.0 버전을 쓰고 있다면, pandas도 최신 버전으로 업그레이드한다.
 ```sh
 pip install --upgrade python-dateutil
+```
+```sh
+pip install --upgrade pandas
 ```
 ```python
 ======================================================================
