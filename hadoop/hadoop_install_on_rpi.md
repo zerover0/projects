@@ -19,11 +19,11 @@
   - rpi04 : 192.168.0.214
   - rpi05 : 192.168.0.215
 * 호스트별 서버 구성
-  - rpi05 : Hadoop NameNode
-  - rpi01 : Hadoop DataNode
-  - rpi02 : Hadoop DataNode
-  - rpi03 : Hadoop DataNode
-  - rpi04 : Hadoop DataNode
+  - rpi05 : Hadoop NameNode/SecondaryNameNode, MapReduce JobTracker
+  - rpi01 : Hadoop DataNode, MapReduce TaskTracker
+  - rpi02 : Hadoop DataNode, MapReduce TaskTracker
+  - rpi03 : Hadoop DataNode, MapReduce TaskTracker
+  - rpi04 : Hadoop DataNode, MapReduce TaskTracker
 
 ### (공통) 호스트에 고정 IP 주소 할당
 
@@ -131,10 +131,11 @@ $ mkdir ~/app ~/data
 
 2.'/etc/hosts' 파일에 Hadoop 클러스터에 포함된 호스트의 IP 주소와 호스트이름을 추가한다.
 ```
-127.0.0.1       localhost
-192.168.0.211   server01
-192.168.0.212   server02
-192.168.0.213   server03
+192.168.0.211   rpi01
+192.168.0.212   rpi02
+192.168.0.213   rpi03
+192.168.0.214   rpi04
+192.168.0.215   rpi05
 ```
 
 ### (master) SSH 인증 키 생성과 배포
