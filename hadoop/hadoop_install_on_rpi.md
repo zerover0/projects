@@ -196,12 +196,17 @@ $ vi ~/app/hadoop/conf/core-site.xml
 
 5.'hdfs-site.xml' 파일을 열어서 아래 내용을 추가한다.
   - dfs.replication : HDFS에 파일이 생성될 때 복제를 몇 개 생성할 지 설정(기본값:3)
+  - dfs.block.size : HDFS 파일 전송할 때 사용할 블럭크기를 지정하는데 Raspberry Pi의 메모리(512MB)를 고려한 최적값을 지정한다.
 ```sh
 $ vi ~/app/hadoop/conf/hdfs-site.xml
 <configuration>
   <property>
     <name>dfs.replication</name>
     <value>1</value>
+  </property>
+  <property>
+    <name>dfs.block.size</name>
+    <value>5242880</value>
   </property>
 </configuration>
 ```
