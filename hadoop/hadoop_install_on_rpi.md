@@ -213,12 +213,22 @@ $ vi ~/app/hadoop/conf/hdfs-site.xml
 
 6.'mapred-site.xml' 파일을 열어서 아래 내용을 추가한다.
   - mapred.job.tracker : Job Tracker URI
+  - mapred.tasktracker.map.tasks.maximum : Map task 프로세스 최대개수를 지정하는데 core가 '1'개이므로 '1'로 지정
+  - mapred.tasktracker.reduce.tasks.maximum : Reduce task 프로세스 최대개수를 지정하는데 core가 '1'개이므로 '1'로 지정
 ```sh
 $ vi ~/app/hadoop/conf/mapred-site.xml
 <configuration>
   <property>
     <name>mapred.job.tracker</name>
     <value>rpi05:9001</value>
+  </property>
+  <property>
+    <name>mapred.tasktracker.map.tasks.maximum</name>
+    <value>1</value>
+  </property>
+  <property>
+    <name>mapred.tasktracker.reduce.tasks.maximum</name>
+    <value>1</value>
   </property>
 </configuration>
 ```
