@@ -7,18 +7,23 @@
   - Raspbian Jessie Lite, 2016-03-18 release
 * 사용 소프트웨어 버전
   - Oracle JDK 1.7
-  - Hadoop 2.6.4
+  - Hadoop 1.2.1
+    - Hadoop 2.x는 Raspberry Pi 1에 구동하기에는 무겁다.
 
 ### 호스트 구성
 
 * 호스트이름과 IP 주소 구성
-  - server01 : 192.168.0.211
-  - server01 : 192.168.0.212
-  - server01 : 192.168.0.213
+  - rpi01 : 192.168.0.211
+  - rpi02 : 192.168.0.212
+  - rpi03 : 192.168.0.213
+  - rpi04 : 192.168.0.214
+  - rpi05 : 192.168.0.215
 * 호스트별 서버 구성
-  - server01 : Master 노드, Hadoop NameNode/SecondaryNameNode/DataNode, YARN ResourceManager/NodeManager
-  - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager
-  - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager
+  - rpi05 : Hadoop NameNode
+  - rpi01 : Hadoop DataNode
+  - rpi02 : Hadoop DataNode
+  - rpi03 : Hadoop DataNode
+  - rpi04 : Hadoop DataNode
 
 ### (공통) 호스트에 고정 IP 주소 할당
 
@@ -144,56 +149,42 @@ $ ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
 2.master 노드에서 생성한 인증키를 slave 노드로 복사한다.
 ```sh
 $ ssh-copy-id hadoop@localhost
-$ ssh-copy-id hadoop@server02
-$ ssh-copy-id hadoop@server03
+$ ssh-copy-id hadoop@rpi01
+$ ssh-copy-id hadoop@rpi02
+$ ssh-copy-id hadoop@rpi03
+$ ssh-copy-id hadoop@rpi04
 ```
 
 ### (master) Hadoop 프로그램 설치와 환경설정
 
-1.Hadoop 홈페이지에서 2.6.4 릴리즈 파일을 다운로드한다.
+1.Hadoop 홈페이지에서 1.2.1 릴리즈 파일을 다운로드한다.
   - http://hadoop.apache.org
 
 2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'hadoop'으로 바꾼다.
 ```sh
-$ tar xzf hadoop-2.6.4.tar.gz -C ~/app/
-$ mv ~/app/hadoop-2.6.4 ~/app/hadoop
+$ tar xzf hadoop-1.2.1-bin.tar.gz -C ~/app/
+$ mv ~/app/hadoop-1.2.1 ~/app/hadoop
 ```
 
 3.'hadoop-env.sh' 파일을 열어서 'JAVA_HOME'과 'HADOOP_LOG_DIR'을 수정한 후 저장한다.
   - HADOOP_DATANODE_OPTS : Raspberry Pi 1(ARMv6) 모델에서 Java Server VM을 원격으로 실행하려면 "-Dcom.sun.management.jmxremote -client" 옵션을 추가해야한다(Raspberry Pi 2,3에서는 불필요)
 ```sh
-$ vi ~/app/hadoop/etc/hadoop/hadoop-env.sh
+$ vi ~/app/hadoop/conf/hadoop-env.sh
 export JAVA_HOME=/usr/lib/jvm/default-java
+export HADOOP_HEAPSIZE=250
 export HADOOP_LOG_DIR=/home/hadoop/data/hadoop/logs
-export HADOOP_DATANODE_OPTS="-Dhadoop.security.logger=ERROR,RFAS $HADOOP_DATANODE_OPTS -Dcom.sun.management.jmxremote -client"
+export HADOOP_DATANODE_OPTS="-Dcom.sun.management.jmxremote $HADOOP_DATANODE_OPTS -client"
 ```
 
-4.'mapred-env.sh' 파일을 열어서 'JAVA_HOME'과 'HADOOP_MAPRED_LOG_DIR'을 수정한 후 저장한다.
-```sh
-$ vi ~/app/hadoop/etc/hadoop/mapred-env.sh
-export JAVA_HOME=/usr/lib/jvm/default-java
-export HADOOP_MAPRED_LOG_DIR=/home/hadoop/data/hadoop/logs
-```
-
-5.'yarn-env.sh' 파일을 열어서 'JAVA_HOME'을 수정하고 'YARN_LOG_DIR'을 추가한 후 저장한다.
-  - YARN_NODEMANAGER_OPTS : Raspberry Pi 1(ARMv6) Java Server VM을 원격으로 실행하려면 "-Dcom.sun.management.jmxremote -client" 옵션을 추가해야한다(Raspberry Pi 2,3에서는 불필요)
-```sh
-$ vi ~/app/hadoop/etc/hadoop/yarn-env.sh
-export JAVA_HOME=/usr/lib/jvm/default-java
-export YARN_NODEMANAGER_OPTS="$YARN_NODEMANAGER_OPTS -Dcom.sun.management.jmxremote -client"
-# default log directory & file <= 이 주석 다음에 YARN_LOG_DIR 추가
-export YARN_LOG_DIR=/home/hadoop/data/hadoop/logs
-```
-
-6.'core-site.xml' 파일을 열어서 아래 내용을 추가한다.
+4.'core-site.xml' 파일을 열어서 아래 내용을 추가한다.
   - fs.default.name : HDFS 서비스 URI
   - hadoop.tmp.dir : Hadoop 시스템 임시 파일 저장 위치
 ```sh
-$ vi ~/app/hadoop/etc/hadoop/core-site.xml
+$ vi ~/app/hadoop/conf/core-site.xml
 <configuration>
   <property>
     <name>fs.default.name</name>
-    <value>hdfs://server01:9000/</value> 
+    <value>hdfs://rpi05:9000/</value> 
   </property>
   <property>
     <name>hadoop.tmp.dir</name>
@@ -202,82 +193,81 @@ $ vi ~/app/hadoop/etc/hadoop/core-site.xml
 </configuration>
 ```
 
-7.'hdfs-site.xml' 파일을 열어서 아래 내용을 추가한다.
+5.'hdfs-site.xml' 파일을 열어서 아래 내용을 추가한다.
   - dfs.replication : HDFS에 파일이 생성될 때 복제를 몇 개 생성할 지 설정(기본값:3)
 ```sh
-$ vi ~/app/hadoop/etc/hadoop/hdfs-site.xml
+$ vi ~/app/hadoop/conf/hdfs-site.xml
 <configuration>
   <property>
     <name>dfs.replication</name>
-    <value>2</value>
+    <value>1</value>
   </property>
 </configuration>
 ```
 
-8.'yarn-site.xml' 파일을 열어서 아래 내용을 추가한다.
-  - yarn.resourcemanager.hostname : Resource manager 호스트이름
+6.'mapred-site.xml' 파일을 열어서 아래 내용을 추가한다.
+  - mapred.job.tracker : Job Tracker URI
 ```sh
-$ vi ~/app/hadoop/etc/hadoop/yarn-site.xml
+$ vi ~/app/hadoop/conf/mapred-site.xml
 <configuration>
   <property>
-    <name>yarn.resourcemanager.hostname</name>
-    <value>server01</value>
+    <name>mapred.job.tracker</name>
+    <value>rpi05:9001</value>
   </property>
 </configuration>
 ```
 
-9.'slaves' 파일을 열어서 데이터노드 호스트이름을 한줄에 하나씩 추가한다.
+7.'slaves' 파일을 열어서 데이터노드 호스트이름을 한줄에 하나씩 추가한다.
 ```sh
-$ vi ~/app/hadoop/etc/hadoop/slaves
-server01
-server02
-server03
+$ vi ~/app/hadoop/conf/slaves
+rpi01
+rpi02
+rpi03
+rpi04
 ```
 
-10.master 노드에 있는 Hadoop 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
+8.master 노드에 있는 Hadoop 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
 ```sh
-$ scp -r ~/app/hadoop hadoop@server02:~/app/
-$ scp -r ~/app/hadoop hadoop@server03:~/app/
+$ scp -r ~/app/hadoop hadoop@rpi01:~/app/
+$ scp -r ~/app/hadoop hadoop@rpi02:~/app/
+$ scp -r ~/app/hadoop hadoop@rpi03:~/app/
+$ scp -r ~/app/hadoop hadoop@rpi04:~/app/
 ```
 
-11.HDFS를 최초로 한번 포맷한다.
+9.HDFS를 최초로 한번 포맷한다.
 ```sh
-$ ~/app/hadoop/bin/hdfs namenode -format
+$ ~/app/hadoop/bin/hadoop namenode -format
 ```
 
-12.HDFS 프로세스를 실행한다. 'start-dfs.sh' 스크립트를 실행하면 master 노드 뿐만아니라 slave 노드에서도 HDFS 프로세스를 실행해준다.
+10.HDFS 프로세스를 실행한다. 'start-dfs.sh' 스크립트를 실행하면 master 노드 뿐만아니라 slave 노드에서도 HDFS 프로세스를 실행해준다.
 ```sh
-$ ~/app/hadoop/sbin/start-dfs.sh
+$ ~/app/hadoop/bin/start-dfs.sh
 ```
 
-13.YARN 프로세서를 실행한다. 'yarn-dfs.sh' 스크립트를 실행하면 master 노드 뿐만아니라 slave 노드에서도 YARN 프로세스를 실행해준다.'
+11.MapReduce 프로세서를 실행한다. 'start-mapred.sh' 스크립트를 실행하면 master 노드 뿐만아니라 slave 노드에서도 MapReduce 프로세스를 실행해준다.'
 ```sh
-$ ~/app/hadoop/sbin/start-yarn.sh
+$ ~/app/hadoop/bin/start-mapred.sh
 ```
 
-14.master 노드와 slave 노드에서 실행 중인 HDFS, YARN 프로세스를 확인한다.
+12.master 노드와 slave 노드에서 실행 중인 Hadoop 프로세스를 확인한다.
 ```sh
-server01:~$ jps
+rpi05:~$ jps
 3011 NameNode
 3345 SecondaryNameNode
-3498 ResourceManager
-1564 NodeManager
-1429 DataNode
-server02:~$ jps
-1564 NodeManager
-1429 DataNode
-server03:~$ jps
-1564 NodeManager
-1429 DataNode
+3650 JobTracker
+```
+```sh
+rpi01:~$ jps
+1950 TaskTracker
+1861 DataNode
 ```
 
-15.Hadoop 모니터링 사이트를 열어서 동작 상태를 확인한다.
-  - Hadoop Web UI : http://server01:50070
-  - HDFS Web UI : http://server01:50070/dfshealth.jsp
-  - YARN Web UI : http://server01:8088
+13.Hadoop 모니터링 사이트를 열어서 동작 상태를 확인한다.
+  - http://rpi05:50070
+  - http://server01:50070/dfshealth.jsp
 
-16.Hadoop 프로세스 종료 순서는 실행한 역순이다.
+14.Hadoop 프로세스 종료 순서는 실행한 역순이다.
 ```sh
-$ ~/app/hadoop/sbin/stop-yarn.sh
-$ ~/app/hadoop/sbin/stop-dfs.sh
+$ ~/app/hadoop/bin/stop-mapred.sh
+$ ~/app/hadoop/bin/stop-dfs.sh
 ```
