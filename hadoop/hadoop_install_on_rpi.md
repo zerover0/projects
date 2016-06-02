@@ -282,10 +282,8 @@ rpi01:~$ jps
 ```
 
 13.Hadoop 모니터링 사이트를 열어서 동작 상태를 확인한다.
-  - http://rpi05:50070
-  - http://server01:50070/dfshealth.jsp
-  - http://rpi05:50030
-  - http://rpi05:50030/jobtracker.jsp
+  - NameNode Information : http://rpi05:50030 or http://rpi05:50030/jobtracker.jsp
+  - MapReduce Information : http://rpi05:50070 or http://server01:50070/dfshealth.jsp
 
 14.Hadoop 프로세스 종료 순서는 실행한 역순이다.
 ```sh
