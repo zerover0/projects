@@ -19,7 +19,7 @@
   - rpi04 : 192.168.0.214
   - rpi05 : 192.168.0.215
 * 호스트별 서버 구성
-  - rpi05 : Hadoop NameNode/SecondaryNameNode, MapReduce JobTracker
+  - rpi05 : Hadoop NameNode/SecondaryNameNode/DataNode, MapReduce JobTracker/TaskTracker
   - rpi01 : Hadoop DataNode, MapReduce TaskTracker
   - rpi02 : Hadoop DataNode, MapReduce TaskTracker
   - rpi03 : Hadoop DataNode, MapReduce TaskTracker
@@ -240,6 +240,7 @@ rpi01
 rpi02
 rpi03
 rpi04
+rpi05
 ```
 
 8.master 노드에 있는 Hadoop 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
@@ -268,9 +269,11 @@ $ ~/app/hadoop/bin/start-mapred.sh
 12.master 노드와 slave 노드에서 실행 중인 Hadoop 프로세스를 확인한다.
 ```sh
 rpi05:~$ jps
-3011 NameNode
-3345 SecondaryNameNode
-3650 JobTracker
+6432 TaskTracker
+6070 DataNode
+6183 SecondaryNameNode
+5959 NameNode
+6327 JobTracker
 ```
 ```sh
 rpi01:~$ jps
