@@ -227,18 +227,13 @@ server01:~$ jps
 3584 SecondaryNameNode
 3246 NameNode
 4475 HMaster
+```
+```sh
 server02:~$ jps
-4607 HRegionServer
-3903 NodeManager
-3388 DataNode
-2548 HMaster
-843 QuorumPeerMain
-4475 HMaster
-server03:~$ jps
-4607 HRegionServer
-3903 NodeManager
-3388 DataNode
-843 QuorumPeerMain
+4400 NodeManager
+8024 HRegionServer
+4265 DataNode
+7860 QuorumPeerMain
 ```
 
 11.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
