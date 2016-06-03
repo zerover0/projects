@@ -181,16 +181,12 @@ $ ~/app/hbase/bin/stop-hbase.sh
 
 ##### (master) OpenTSDB 설치와 환경설정
 
-1.다음 주소에서 OpenTSDB의 릴리즈 파일을 다운로드한다.
+1.다음 주소에서 OpenTSDB의 Debian 릴리즈 파일(*.deb)을 다운로드한다.
   - https://github.com/OpenTSDB/opentsdb/releases
 
-2.다운로드한 파일의 압축을 푼 후, 빌드하고 설치한다.
+2.HBase가 설치된 호스트에서 다운로드한 Debian package 파일을 설치한다.
 ```sh
-$ tar xzf opentsdb-2.2.0.tar.gz -C ~/
-$ cd ~/opentsdb-2.2.0
-$ ./build.sh
-$ cd build
-$ sudo make install
+$ sudo dpkg -i opentsdb-2.2.0_all.deb
 ```
 
 3.OpenTSDB 프로그램은 '/usr/local/share/opentsdb/' 디렉토리에 설치된다. 환경설정 파일인 'opentsdb.conf'을 열어서 필요한 옵션을 설정하고 저장한다.
@@ -205,13 +201,12 @@ tsd.storage.fix_duplicates = true
 4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행한다.
 ```sh
 $ export JAVA_HOME=/usr/lib/jvm/default-java
-$ export HBASE_HOME=/usr/local/hbase 
+$ export HBASE_HOME=/home/hadoop/app/hbase
 $ export COMPRESSION=NONE 
 $ /usr/share/opentsdb/tools/create_table.sh
-2016-04-15 11:24:19,339 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 HBase Shell; enter 'help<RETURN>' for list of supported commands.
 Type "exit<RETURN>" to leave the HBase Shell
-Version 1.1.4, r14c0e77956f9bb4c6edf0378474264843e4a82c3, Wed Mar 16 21:18:26 PDT 2016
+Version 1.2.1, r14c0e77956f9bb4c6edf0378474264843e4a82c3, Wed Mar 16 21:18:26 PDT 2016
 
 create 'tsdb-uid',
   {NAME => 'id', COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'},
