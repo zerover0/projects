@@ -7,7 +7,6 @@
   - Oracle JDK 1.7
   - GnuPlot 4.6
   - Hadoop 2.6.4
-  - ZooKeeper 3.4.8
   - HBase 1.2.1
   - OpenTSDB 2.2.0
 
@@ -74,74 +73,6 @@ $ sudo apt-get update
 $ sudo apt-get install gnuplot 
 ```
 
-##### (master) ZooKeeper 설치와 환경설정
-
-ZooKeeper는 분산 서버들 간에 조정자 역할을 해주는데, HBase가 분산 환경에서 작동할 때 필요하다.
-
-1.ZooKeeper 홈페이지에서 3.4.8 릴리즈 파일을 다운로드한다.
-  - http://zookeeper.apache.org
-
-2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'zookeeper'로 바꾼다.
-```sh
-$ tar xzf zookeeper-3.4.8.tar.gz -C ~/app/
-$ mv ~/app/zookeeper-3.4.8 ~/app/zookeeper
-```
-
-3.'zoo.cfg' 샘플 파일을 복사해서 ZooKeeper 환경설정 파일을 만든다.
-```sh
-$ cp ~/app/zookeeper/conf/zoo_sample.cfg ~/app/zookeeper/conf/zoo.cfg
-```
-
-4.'zoo.cfg' 파일을 열어서 'dataDir' 설정을 수정한 후에 저장한다.
-  - dataDir : ZooKeeper의 데이터를 저장할 로컬 디렉토리
-```sh
-$ vi ~/app/zookeeper/conf/zoo.cfg
-dataDir=/home/hadoop/data/zookeeper
-```
-
-5.master 노드에 있는 ZooKeeper 디렉토리 전체를 slave 노드로 복사한다.
-```sh
-$ scp -r ~/app/zookeeper hadoop@server02:~/app/
-$ scp -r ~/app/zookeeper hadoop@server03:~/app/
-```
-
-6.ZooKeeper 서버를 실행한다.
-```sh
-$ ~/app/zookeeper/bin/zkServer.sh start
-```
-
-7.ZooKeeper 프로세스가 작동하는지 확인한다.
-```sh
-$ jps
-1220 QuorumPeerMain
-```
-
-8.telnet 명령으로 ZooKeeper 서버에 연결해서 'stat' 명령으로 작동 중인지 확인할 수 있다(telnet이 없다면 통과).
-```sh
-$ telnet localhost 2181
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-stat
-Zookeeper version: 3.4.8--1, built on 02/06/2016 03:18 GMT
-Clients:
- /127.0.0.1:56211[0](queued=0,recved=1,sent=0)
-Latency min/avg/max: 0/0/0
-Received: 1
-Sent: 0
-Connections: 1
-Outstanding: 0
-Zxid: 0x0
-Mode: standalone
-Node count: 4
-Connection closed by foreign host.
-```
-
-9.ZooKeeper 프로세스를 종료하려면, 아래 명령을 실행한다.
-```sh
-$ ~/app/zookeeper/bin/zkServer.sh stop
-```
-
 ##### (master) HBase 설치와 환경설정
 
 1.HBase 홈페이지에서 1.1.4 릴리즈 파일을 다운로드한다.
@@ -166,9 +97,10 @@ server03
 $ cp ~/app/hadoop/etc/hadoop/hdfs-site.xml ~/app/hbase/conf/
 ```
 
-6.'hbase-env.sh' 파일을 열어서 'LD_LIBRARY_PATH'를 추가하고, 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_LOG_DIR'을 찾아서 수정한 후 저장한다.
+6.'hbase-env.sh' 파일을 열어서 'LD_LIBRARY_PATH'를 추가하고, 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_LOG_DIR', 'HBASE_MANAGES_ZK'을 찾아서 수정한 후 저장한다.
   - LD_LIBRARY_PATH : Hadoop native library 경로를 추가
   - HBASE_CLASSPATH : HADOOP_CONF_DIR을 가리키도록 설정($HADOOP_CONF_DIR/hadoop-env.sh 이용)
+  - HBASE_MANAGES_ZK : HBase 내장 ZooKeeper 서버 사용 여부
 ```sh
 $ vi ~/app/hbase/conf/hbase-env.sh
 export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/hadoop/app/hadoop/lib/native
@@ -330,14 +262,4 @@ Cannot write to directory [/tmp/opentsdb]
 2.OpenTSDB에 있는 time series 데이터의 메타데이터를 나타나도록 하려면 아래 명령을 OpenTSDB 서버가 실행 중인 호스트에서 실행한다.
 ```sh
 $ /usr/share/opentsdb/bin/tsdb uid metasync
-```
-
-##### (공통) ZooKeeper를 부팅할 때 자동 실행하기
-
-ZooKeepr는 다른 서버 프로그램들이 실행되기 이전에 독립적으로 실행되어야하므로 부팅할 때 자동으로 실행되도록 설정한다. 부팅할 때 실행하는 여러가지 방법 가운데, 아래는 'crontab'을 이용하는 방법이다.
-
-1.'/etc/crontab' 파일을 열어서 파일 끝부분에 부팅할 때 실행할 서버 스크립트를 추가하고 저장한다.
-```sh
-$ sudo vi /etc/crontab
-@reboot hadoop /home/hadoop/app/zookeeper/bin/zkServer.sh start
 ```
