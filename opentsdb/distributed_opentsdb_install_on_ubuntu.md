@@ -193,7 +193,7 @@ $ sudo dpkg -i opentsdb-2.2.0_all.deb
   - tsd.core.auto_create_metrics : true = 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric 추가
   - tsd.storage.fix_duplicates : true = 같은 시간에 중복된 데이터가 존재하는 경우 마지막 입력된 데이터만 쓰임
 ```sh
-$ sudo vi /usr/local/share/opentsdb/etc/opentsdb/opentsdb.conf
+$ sudo vi /etc/opentsdb/opentsdb.conf
 tsd.core.auto_create_metrics = true
 tsd.storage.fix_duplicates = true
 ```
@@ -247,7 +247,7 @@ Cannot write to directory [/tmp/opentsdb]
 ```
 
 6.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB Web UI 사이트를 통해서 확인한다.
-  - 호스트 주소가 '192.168.0.3'인 경우 : http://192.168.0.3:4242
+  - 호스트 주소가 'server01'인 경우 : http://server01:4242
 
 ##### (master) Grafana에서 OpenTSDB lookup API 사용을 위한 설정
 
