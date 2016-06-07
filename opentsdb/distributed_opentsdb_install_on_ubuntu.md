@@ -107,7 +107,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/hadoop/app/hadoop/lib/native
 export JAVA_HOME=/usr/lib/jvm/default-java
 export HBASE_CLASSPATH=/home/hadoop/app/hadoop/etc/hadoop
 export HBASE_LOG_DIR=/home/hadoop/data/hbase/logs
-export HBASE_MANAGES_ZK=false
+export HBASE_MANAGES_ZK=true
 ```
 
 7.'hbase-site.xml' 파일을 열어서 아래 내용을 추가한다.
@@ -236,9 +236,7 @@ Hbase::Table - tsdb-meta
 
 5.TSD 데몬을 실행한다.
 ```sh
-$ /usr/share/opentsdb/bin/tsdb tsd
-(중간 생략)
-2016-04-15 20:54:56,124 INFO  [main] TSDMain: Ready to serve on /0.0.0.0:4242
+$ sudo service opentsdb start
 ```
   - 만일, 아래와 같은 에러가 나면, '/tmp/opentsdb' 디렉토리를 지우고 다시 실행한다.
 ```
