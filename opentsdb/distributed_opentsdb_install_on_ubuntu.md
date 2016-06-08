@@ -17,9 +17,9 @@
   - server01 : 192.168.0.212
   - server01 : 192.168.0.213
 * 호스트별 서버 구성
-  - server01 : Master 노드, Hadoop NameNode/SecondaryNameNode/DataNode, YARN ResourceManager/NodeManager, HBase Master/RegionServer, ZooKeeper, OpenTSDB
-  - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer, ZooKeeper
-  - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer, ZooKeeper
+  - server01 : Master 노드, Hadoop NameNode/SecondaryNameNode/DataNode, YARN ResourceManager/NodeManager, HBase Master/RegionServer, OpenTSDB
+  - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer
+  - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer
 
 ##### (공통) JDK(Java Development Kit) 설치하기
 
@@ -60,8 +60,6 @@ $ sudo ln -s /usr/lib/jvm/java-7-oracle /usr/lib/jvm/default-java
 * 아래 링크의 문서를 따라서 Hadoop을 설치한다.
   - Ubuntu Server 14.04에 Hadoop 설치하기
     - https://github.com/zerover0/projects/blob/master/hadoop/hadoop_install_on_ubuntu.md
-  - Raspberry Pi에 Hadoop 설치하기
-    - https://github.com/zerover0/projects/blob/master/hadoop/hadoop_install_on_rpi.md
 
 ##### (master) GnuPlot 설치하기
 
@@ -75,13 +73,13 @@ $ sudo apt-get install gnuplot
 
 ##### (master) HBase 설치와 환경설정
 
-1.HBase 홈페이지에서 1.1.4 릴리즈 파일을 다운로드한다.
+1.HBase 홈페이지에서 1.2.1 릴리즈 파일을 다운로드한다.
   - http://hbase.apache.org
 
 2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'hbase'로 바꾼다.
 ```sh
-$ tar xzf hbase-1.1.4-bin.tar.gz -C ~/app/
-$ mv ~/app/hbase-1.1.4 ~/app/hbase
+$ tar xzf hbase-1.2.1-bin.tar.gz -C ~/app/
+$ mv ~/app/hbase-1.2.1 ~/app/hbase
 ```
 
 4.'regionservers' 파일을 열어서 RegionServer가 실행될 호스트이름을 한줄에 하나씩 입력하고 저장한다.
@@ -151,21 +149,21 @@ $ ~/app/hbase/bin/start-hbase.sh
 10.HBase 프로세스가 작동하는지 확인한다.
 ```sh
 server01:~$ jps
-4607 HRegionServer
-3903 NodeManager
-3765 ResourceManager
-3388 DataNode
-843 QuorumPeerMain
-3584 SecondaryNameNode
-3246 NameNode
-4475 HMaster
+6176 HQuorumPeer
+5478 ResourceManager
+5127 DataNode
+5320 SecondaryNameNode
+4969 NameNode
+6425 HRegionServer
+5611 NodeManager
+6251 HMaster
 ```
 ```sh
 server02:~$ jps
 4400 NodeManager
 8024 HRegionServer
 4265 DataNode
-7860 QuorumPeerMain
+7860 HQuorumPeer
 ```
 
 11.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
