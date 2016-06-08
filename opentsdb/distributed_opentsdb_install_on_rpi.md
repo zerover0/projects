@@ -165,10 +165,10 @@ server02:~$ jps
 ```
 
 10.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
-  - HBase Master Web UI : http://server01:16010
-  - HBase RegionServer Web UI : http://server01:16030
-  - HBase RegionServer Web UI : http://server02:16030
-  - HBase RegionServer Web UI : http://server03:16030
+  - HBase Master Web UI : http://server01:60010
+  - HBase RegionServer Web UI : http://server01:60030
+  - HBase RegionServer Web UI : http://server02:60030
+  - HBase RegionServer Web UI : http://server03:60030
 
 11.HBase 프로세스를 종료하려면, 아래 명령을 실행한다.
 ```sh
