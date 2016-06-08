@@ -6,9 +6,8 @@
 * 사용 소프트웨어 버전
   - Oracle JDK 1.7
   - GnuPlot 4.6
-  - Hadoop 2.6.4
-  - ZooKeeper 3.4.8
-  - HBase 1.2.1
+  - Hadoop 1.2.1
+  - HBase 0.94.27
   - OpenTSDB 2.2.0
 
 ##### 호스트 구성
@@ -17,9 +16,9 @@
   - server01 : 192.168.0.212
   - server01 : 192.168.0.213
 * 호스트별 서버 구성
-  - server01 : Master 노드, Hadoop NameNode/SecondaryNameNode/DataNode, YARN ResourceManager/NodeManager, HBase Master/RegionServer, ZooKeeper, OpenTSDB
-  - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer, ZooKeeper
-  - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer, ZooKeeper
+  - server01 : Hadoop NameNode/SecondaryNameNode/DataNode, MapReduce JobTracker/TaskTracker, HBase Master/RegionServer, OpenTSDB
+  - server02 : Hadoop DataNode, MapReduce TaskTracker, HBase RegionServer
+  - server03 : Hadoop DataNode, MapReduce TaskTracker, HBase RegionServer
 
 ##### JDK(Java Development Kit) 설치하기
 Hadoop, HBase, ZooKeeper, OpenTSDB 등 서버들이 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다. Open JDK는 Oracle JDK보다 성능이 떨어지고 설치할 프로그램들과 알 수 없는 버그를 만들기때문에 Oracle JDK를 사용한다.
@@ -55,8 +54,6 @@ $ sudo ln -s /usr/lib/jvm/jdk-7-oracle-arm-vfp-hflt /usr/lib/jvm/default-java
 ##### (공통) Hadoop 설치와 환경설정
 
 * 아래 링크의 문서를 따라서 Hadoop을 설치한다.
-  - Ubuntu Server 14.04에 Hadoop 설치하기
-    - https://github.com/zerover0/projects/blob/master/hadoop/hadoop_install_on_ubuntu.md
   - Raspberry Pi에 Hadoop 설치하기
     - https://github.com/zerover0/projects/blob/master/hadoop/hadoop_install_on_rpi.md
 
@@ -70,86 +67,18 @@ $ sudo apt-get update
 $ sudo apt-get install gnuplot 
 ```
 
-##### (master) ZooKeeper 설치와 환경설정
-
-ZooKeeper는 분산 서버들 간에 조정자 역할을 해주는데, HBase가 분산 환경에서 작동할 때 필요하다.
-
-1.ZooKeeper 홈페이지에서 3.4.8 릴리즈 파일을 다운로드한다.
-  - http://zookeeper.apache.org
-
-2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'zookeeper'로 바꾼다.
-```sh
-$ tar xzf zookeeper-3.4.8.tar.gz -C ~/app/
-$ mv ~/app/zookeeper-3.4.8 ~/app/zookeeper
-```
-
-3.'zoo.cfg' 샘플 파일을 복사해서 ZooKeeper 환경설정 파일을 만든다.
-```sh
-$ cp ~/app/zookeeper/conf/zoo_sample.cfg ~/app/zookeeper/conf/zoo.cfg
-```
-
-4.'zoo.cfg' 파일을 열어서 'dataDir' 설정을 수정한 후에 저장한다.
-  - dataDir : ZooKeeper의 데이터를 저장할 로컬 디렉토리
-```sh
-$ vi ~/app/zookeeper/conf/zoo.cfg
-dataDir=/home/hadoop/data/zookeeper
-```
-
-5.master 노드에 있는 ZooKeeper 디렉토리 전체를 slave 노드로 복사한다.
-```sh
-$ scp -r ~/app/zookeeper hadoop@server02:~/app/
-$ scp -r ~/app/zookeeper hadoop@server03:~/app/
-```
-
-6.ZooKeeper 서버를 실행한다.
-```sh
-$ ~/app/zookeeper/bin/zkServer.sh start
-```
-
-7.ZooKeeper 프로세스가 작동하는지 확인한다.
-```sh
-$ jps
-1220 QuorumPeerMain
-```
-
-8.telnet 명령으로 ZooKeeper 서버에 연결해서 'stat' 명령으로 작동 중인지 확인할 수 있다(telnet이 없다면 통과).
-```sh
-$ telnet localhost 2181
-Trying 127.0.0.1...
-Connected to localhost.
-Escape character is '^]'.
-stat
-Zookeeper version: 3.4.8--1, built on 02/06/2016 03:18 GMT
-Clients:
- /127.0.0.1:56211[0](queued=0,recved=1,sent=0)
-Latency min/avg/max: 0/0/0
-Received: 1
-Sent: 0
-Connections: 1
-Outstanding: 0
-Zxid: 0x0
-Mode: standalone
-Node count: 4
-Connection closed by foreign host.
-```
-
-9.ZooKeeper 프로세스를 종료하려면, 아래 명령을 실행한다.
-```sh
-$ ~/app/zookeeper/bin/zkServer.sh stop
-```
-
 ##### (master) HBase 설치와 환경설정
 
-1.HBase 홈페이지에서 1.1.4 릴리즈 파일을 다운로드한다.
+1.HBase 홈페이지에서 0.94.27 릴리즈 파일을 다운로드한다.
   - http://hbase.apache.org
 
 2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'hbase'로 바꾼다.
 ```sh
-$ tar xzf hbase-1.1.4-bin.tar.gz -C ~/app/
-$ mv ~/app/hbase-1.1.4 ~/app/hbase
+$ tar xzf hbase-0.94.27.tar.gz -C ~/app/
+$ mv ~/app/hbase-0.94.27 ~/app/hbase
 ```
 
-4.'regionservers' 파일을 열어서 RegionServer가 실행될 호스트이름을 한줄에 하나씩 입력하고 저장한다.
+3.'regionservers' 파일을 열어서 RegionServer가 실행될 호스트이름을 한줄에 하나씩 입력하고 저장한다.
 ```sh
 $ vi ~/app/hbase/conf/regionservers
 server01
@@ -157,24 +86,27 @@ server02
 server03
 ```
 
-5.Hadoop HDFS 설정을 참조하기 위해서 'hdfs-site.xml' 파일을 Hadoop 디렉토리에서 HBase 디렉토리로 복사한다.
+4.Hadoop HDFS 설정을 참조하기 위해서 'hdfs-site.xml' 파일을 Hadoop 디렉토리에서 HBase 디렉토리로 복사한다.
 ```sh
-$ cp ~/app/hadoop/etc/hadoop/hdfs-site.xml ~/app/hbase/conf/
+$ cp ~/app/hadoop/conf/hdfs-site.xml ~/app/hbase/conf/
 ```
 
-6.'hbase-env.sh' 파일을 열어서 'LD_LIBRARY_PATH'를 추가하고, 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_LOG_DIR'을 찾아서 수정한 후 저장한다.
-  - LD_LIBRARY_PATH : Hadoop native library 경로를 추가
+5.'hbase-env.sh' 파일을 열어서 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_HEAPSIZE', 'HBASE_LOG_DIR', 'HBASE_MANAGES_ZK'을 찾아서 수정한 후 저장한다.
+  - JAVA_HOME : JDK 홈디렉토리
   - HBASE_CLASSPATH : HADOOP_CONF_DIR을 가리키도록 설정($HADOOP_CONF_DIR/hadoop-env.sh 이용)
+  - HBASE_HEAPSIZE : Raspberry Pi의 메모리가 작으므로 heap 용량을 제한한다.
+  - HBASE_LOG_DIR : HBase server 로그 저장 위치
+  - HBASE_MANAGES_ZK : HBase가 내장 ZooKeeper를 이용할 지 여부 설정
 ```sh
 $ vi ~/app/hbase/conf/hbase-env.sh
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/home/hadoop/app/hadoop/lib/native
 export JAVA_HOME=/usr/lib/jvm/default-java
-export HBASE_CLASSPATH=/home/hadoop/app/hadoop/etc/hadoop
+export HBASE_CLASSPATH=${HBASE_CLASSPATH}:${HADOOP_HOME}/conf
+export HBASE_HEAPSIZE=250
 export HBASE_LOG_DIR=/home/hadoop/data/hbase/logs
-export HBASE_MANAGES_ZK=false
+export HBASE_MANAGES_ZK=true
 ```
 
-7.'hbase-site.xml' 파일을 열어서 아래 내용을 추가한다.
+6.'hbase-site.xml' 파일을 열어서 아래 내용을 추가한다.
   - hbase.rootdir : HDFS의 HBase 루트 디렉토리 URI
   - hbase.cluster.distributed : true = 분산환경에서 동작을 의미
   - hbase.zookeeper.quorum : ZooKeeper 프로세스가 실행 중인 호스트이름 목록
@@ -201,66 +133,56 @@ $ vi ~/app/hbase/conf/hbase-site.xml
 </configuration>
 ```
 
-8.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
+7.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
 ```sh
 $ scp -r ~/app/hbase hadoop@server02:~/app/
 $ scp -r ~/app/hbase hadoop@server03:~/app/
 ```
 
-9.HBase 프로세스를 실행한다.
+8.HBase 프로세스를 실행한다.
 ```sh
 $ ~/app/hbase/bin/start-hbase.sh
 ```
 
-10.HBase 프로세스가 작동하는지 확인한다.
+9.HBase 프로세스가 작동하는지 확인한다.
 ```sh
 server01:~$ jps
-4607 HRegionServer
-3903 NodeManager
-3765 ResourceManager
-3388 DataNode
-843 QuorumPeerMain
-3584 SecondaryNameNode
-3246 NameNode
-4475 HMaster
+6432 TaskTracker
+6070 DataNode
+21987 HQuorumPeer
+6183 SecondaryNameNode
+22153 HRegionServer
+5959 NameNode
+6327 JobTracker
+22054 HMaster
+```
+```sh
 server02:~$ jps
-4607 HRegionServer
-3903 NodeManager
-3388 DataNode
-2548 HMaster
-843 QuorumPeerMain
-4475 HMaster
-server03:~$ jps
-4607 HRegionServer
-3903 NodeManager
-3388 DataNode
-843 QuorumPeerMain
+11594 HRegionServer
+2786 TaskTracker
+11522 HQuorumPeer
+2691 DataNode
 ```
 
-11.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
+10.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
   - HBase Master Web UI : http://server01:16010
-  - HBase backup Master Web UI : http://server02:16010
   - HBase RegionServer Web UI : http://server01:16030
   - HBase RegionServer Web UI : http://server02:16030
   - HBase RegionServer Web UI : http://server03:16030
 
-12.HBase 프로세스를 종료하려면, 아래 명령을 실행한다.
+11.HBase 프로세스를 종료하려면, 아래 명령을 실행한다.
 ```sh
 $ ~/app/hbase/bin/stop-hbase.sh
 ```
 
 ##### (master) OpenTSDB 설치와 환경설정
 
-1.다음 주소에서 OpenTSDB의 릴리즈 파일을 다운로드한다.
+1.다음 주소에서 OpenTSDB의 Debian 릴리즈 파일(*.deb)을 다운로드한다.
   - https://github.com/OpenTSDB/opentsdb/releases
 
-2.다운로드한 파일의 압축을 푼 후, 빌드하고 설치한다.
+2.HBase가 설치된 호스트에서 다운로드한 Debian package 파일을 설치한다.
 ```sh
-$ tar xzf opentsdb-2.2.0.tar.gz -C ~/
-$ cd ~/opentsdb-2.2.0
-$ ./build.sh
-$ cd build
-$ sudo make install
+$ sudo dpkg -i opentsdb-2.2.0_all.deb
 ```
 
 3.OpenTSDB 프로그램은 '/usr/local/share/opentsdb/' 디렉토리에 설치된다. 환경설정 파일인 'opentsdb.conf'을 열어서 필요한 옵션을 설정하고 저장한다.
@@ -311,9 +233,7 @@ Hbase::Table - tsdb-meta
 
 5.TSD 데몬을 실행한다.
 ```sh
-$ /usr/share/opentsdb/bin/tsdb tsd
-(중간 생략)
-2016-04-15 20:54:56,124 INFO  [main] TSDMain: Ready to serve on /0.0.0.0:4242
+$ sudo service opentsdb start
 ```
   - 만일, 아래와 같은 에러가 나면, '/tmp/opentsdb' 디렉토리를 지우고 다시 실행한다.
 ```
@@ -322,7 +242,7 @@ Cannot write to directory [/tmp/opentsdb]
 ```
 
 6.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB Web UI 사이트를 통해서 확인한다.
-  - 호스트 주소가 '192.168.0.3'인 경우 : http://192.168.0.3:4242
+  - 호스트 주소가 'server01'인 경우 : http://server01:4242
 
 ##### (master) Grafana에서 OpenTSDB lookup API 사용을 위한 설정
 
@@ -332,14 +252,4 @@ Cannot write to directory [/tmp/opentsdb]
 2.OpenTSDB에 있는 time series 데이터의 메타데이터를 나타나도록 하려면 아래 명령을 OpenTSDB 서버가 실행 중인 호스트에서 실행한다.
 ```sh
 $ /usr/share/opentsdb/bin/tsdb uid metasync
-```
-
-##### (공통) ZooKeeper를 부팅할 때 자동 실행하기
-
-ZooKeepr는 다른 서버 프로그램들이 실행되기 이전에 독립적으로 실행되어야하므로 부팅할 때 자동으로 실행되도록 설정한다. 부팅할 때 실행하는 여러가지 방법 가운데, 아래는 'crontab'을 이용하는 방법이다.
-
-1.'/etc/crontab' 파일을 열어서 파일 끝부분에 부팅할 때 실행할 서버 스크립트를 추가하고 저장한다.
-```sh
-$ sudo vi /etc/crontab
-@reboot hadoop /home/hadoop/app/zookeeper/bin/zkServer.sh start
 ```
