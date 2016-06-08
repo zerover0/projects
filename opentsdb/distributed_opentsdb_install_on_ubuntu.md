@@ -82,7 +82,7 @@ $ tar xzf hbase-1.2.1-bin.tar.gz -C ~/app/
 $ mv ~/app/hbase-1.2.1 ~/app/hbase
 ```
 
-4.'regionservers' 파일을 열어서 RegionServer가 실행될 호스트이름을 한줄에 하나씩 입력하고 저장한다.
+3.'regionservers' 파일을 열어서 RegionServer가 실행될 호스트이름을 한줄에 하나씩 입력하고 저장한다.
 ```sh
 $ vi ~/app/hbase/conf/regionservers
 server01
@@ -90,12 +90,12 @@ server02
 server03
 ```
 
-5.Hadoop HDFS 설정을 참조하기 위해서 'hdfs-site.xml' 파일을 Hadoop 디렉토리에서 HBase 디렉토리로 복사한다.
+4.Hadoop HDFS 설정을 참조하기 위해서 'hdfs-site.xml' 파일을 Hadoop 디렉토리에서 HBase 디렉토리로 복사한다.
 ```sh
 $ cp ~/app/hadoop/etc/hadoop/hdfs-site.xml ~/app/hbase/conf/
 ```
 
-6.'hbase-env.sh' 파일을 열어서 'LD_LIBRARY_PATH'를 추가하고, 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_LOG_DIR', 'HBASE_MANAGES_ZK'을 찾아서 수정한 후 저장한다.
+5.'hbase-env.sh' 파일을 열어서 'LD_LIBRARY_PATH'를 추가하고, 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_LOG_DIR', 'HBASE_MANAGES_ZK'을 찾아서 수정한 후 저장한다.
   - LD_LIBRARY_PATH : Hadoop native library 경로를 추가
   - HBASE_CLASSPATH : HADOOP_CONF_DIR을 가리키도록 설정($HADOOP_CONF_DIR/hadoop-env.sh 이용)
   - HBASE_MANAGES_ZK : HBase 내장 ZooKeeper 서버 사용 여부
@@ -108,7 +108,7 @@ export HBASE_LOG_DIR=/home/hadoop/data/hbase/logs
 export HBASE_MANAGES_ZK=true
 ```
 
-7.'hbase-site.xml' 파일을 열어서 아래 내용을 추가한다.
+6.'hbase-site.xml' 파일을 열어서 아래 내용을 추가한다.
   - hbase.rootdir : HDFS의 HBase 루트 디렉토리 URI
   - hbase.cluster.distributed : true = 분산환경에서 동작을 의미
   - hbase.zookeeper.quorum : ZooKeeper 프로세스가 실행 중인 호스트이름 목록
@@ -135,18 +135,18 @@ $ vi ~/app/hbase/conf/hbase-site.xml
 </configuration>
 ```
 
-8.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
+7.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
 ```sh
 $ scp -r ~/app/hbase hadoop@server02:~/app/
 $ scp -r ~/app/hbase hadoop@server03:~/app/
 ```
 
-9.HBase 프로세스를 실행한다.
+8.HBase 프로세스를 실행한다.
 ```sh
 $ ~/app/hbase/bin/start-hbase.sh
 ```
 
-10.HBase 프로세스가 작동하는지 확인한다.
+9.HBase 프로세스가 작동하는지 확인한다.
 ```sh
 server01:~$ jps
 6176 HQuorumPeer
@@ -166,13 +166,13 @@ server02:~$ jps
 7860 HQuorumPeer
 ```
 
-11.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
+10.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
   - HBase Master Web UI : http://server01:16010
   - HBase RegionServer Web UI : http://server01:16030
   - HBase RegionServer Web UI : http://server02:16030
   - HBase RegionServer Web UI : http://server03:16030
 
-12.HBase 프로세스를 종료하려면, 아래 명령을 실행한다.
+11.HBase 프로세스를 종료하려면, 아래 명령을 실행한다.
 ```sh
 $ ~/app/hbase/bin/stop-hbase.sh
 ```
