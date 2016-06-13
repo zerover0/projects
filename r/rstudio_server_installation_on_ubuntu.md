@@ -20,7 +20,7 @@ $ wget https://download2.rstudio.org/rstudio-server-0.99.902-amd64.deb
 $ sudo dpkg -i rstudio-server-0.99.902-amd64.deb
 ```
 5.R java config 업데이트 (rJava 패키지 사용을 위해서)
-	- 'java.conf'에 추가하는 경로는 실제로 JRE가 설치된 디렉토리로 수정
+  - 'java.conf'에 추가하는 경로는 실제로 JRE가 설치된 디렉토리로 수정
 ```sh
 $ sudo vi /etc/ld.so.conf.d/java.conf
 /usr/lib/jvm/default-java/jre/lib/amd64
