@@ -13,15 +13,15 @@
 ##### 호스트 구성
 * 호스트이름과 IP 주소 구성
   - server01 : 192.168.0.211
-  - server01 : 192.168.0.212
-  - server01 : 192.168.0.213
+  - server02 : 192.168.0.212
+  - server03 : 192.168.0.213
 * 호스트별 서버 구성
-  - server01 : Hadoop NameNode/SecondaryNameNode/DataNode, MapReduce JobTracker/TaskTracker, HBase Master/RegionServer, OpenTSDB
-  - server02 : Hadoop DataNode, MapReduce TaskTracker, HBase RegionServer
-  - server03 : Hadoop DataNode, MapReduce TaskTracker, HBase RegionServer
+  - server01 : (Master) Hadoop NameNode/SecondaryNameNode/DataNode, MapReduce JobTracker/TaskTracker, HBase Master/RegionServer, OpenTSDB
+  - server02 : (Slave) Hadoop DataNode, MapReduce TaskTracker, HBase RegionServer
+  - server03 : (Slave) Hadoop DataNode, MapReduce TaskTracker, HBase RegionServer
 
 ##### JDK(Java Development Kit) 설치하기
-Hadoop, HBase, ZooKeeper, OpenTSDB 등 서버들이 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요합니다. Open JDK는 Oracle JDK보다 성능이 떨어지고 설치할 프로그램들과 알 수 없는 버그를 만들기때문에 Oracle JDK를 사용한다.
+Hadoop, HBase, ZooKeeper, OpenTSDB 등 서버들이 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요하다. Open JDK는 Oracle JDK보다 성능이 떨어지고 설치할 프로그램들과 알 수 없는 버그를 만들기때문에 Oracle JDK를 사용한다.
 
 1.JDK 설치 여부를 확인하고, Open JDK가 설치되어 있다면 제거한다.
 ```sh
