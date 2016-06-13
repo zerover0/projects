@@ -3,7 +3,7 @@
 1.Rstudio repository 추가
 ```sh
 $ sudo vi /etc/apt/sources.list
-deb http://healthstat.snu.ac.kr/CRAN/bin/linux/ubuntu   trusty/
+deb http://healthstat.snu.ac.kr/CRAN/bin/linux/ubuntu trusty/
 ```
 2.Rstudio repository의 public key 추가
 ```sh
