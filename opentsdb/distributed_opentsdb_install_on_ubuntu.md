@@ -14,16 +14,16 @@
 
 * 호스트이름과 IP 주소 구성
   - server01 : 192.168.0.211
-  - server01 : 192.168.0.212
-  - server01 : 192.168.0.213
+  - server02 : 192.168.0.212
+  - server03 : 192.168.0.213
 * 호스트별 서버 구성
-  - server01 : Master 노드, Hadoop NameNode/SecondaryNameNode/DataNode, YARN ResourceManager/NodeManager, HBase Master/RegionServer, OpenTSDB
-  - server02 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer
-  - server03 : Slave 노드, Hadoop DataNode, YARN NodeManager, HBase RegionServer
+  - server01 : (Master) Hadoop NameNode/SecondaryNameNode/DataNode, YARN ResourceManager/NodeManager, HBase Master/RegionServer, OpenTSDB
+  - server02 : (Slave) Hadoop DataNode, YARN NodeManager, HBase RegionServer
+  - server03 : (Slave) Hadoop DataNode, YARN NodeManager, HBase RegionServer
 
 ##### (공통) JDK(Java Development Kit) 설치하기
 
-Hadoop, HBase, ZooKeeper, OpenTSDB 등 서버들이 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요하다. Open JDK는 Oracle JDK보다 성능도 나쁘고 설치할 프로그램들과 여러가지 버그를 만들기때문에 Oracle JDK를 사용한다.
+Hadoop, HBase, OpenTSDB 등 서버들이 모두 Java 기반으로 개발되어 있어서 실행할 때 JDK(혹은 JRE)가 필요하다. Open JDK는 Oracle JDK보다 성능도 나쁘고 설치할 프로그램들과 여러가지 버그를 만들기때문에 Oracle JDK를 사용한다.
 
 1.JDK 설치 여부를 확인하고, Open JDK가 설치되어 있다면 제거한다.
 ```sh
@@ -98,6 +98,7 @@ $ cp ~/app/hadoop/etc/hadoop/hdfs-site.xml ~/app/hbase/conf/
 5.'hbase-env.sh' 파일을 열어서 'LD_LIBRARY_PATH'를 추가하고, 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_LOG_DIR', 'HBASE_MANAGES_ZK'을 찾아서 수정한 후 저장한다.
   - LD_LIBRARY_PATH : Hadoop native library 경로를 추가
   - HBASE_CLASSPATH : HADOOP_CONF_DIR을 가리키도록 설정($HADOOP_CONF_DIR/hadoop-env.sh 이용)
+  - HBASE_LOG_DIR : HBase log가 저장될 디렉토리
   - HBASE_MANAGES_ZK : HBase 내장 ZooKeeper 서버 사용 여부
 ```sh
 $ vi ~/app/hbase/conf/hbase-env.sh
