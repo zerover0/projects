@@ -1,4 +1,5 @@
 #!/bin/sh
+# OpenTSDB start-up script for Raspberry Pi
 
 # JAVA
 export JAVA_HOME=/usr/lib/jvm/default-java
