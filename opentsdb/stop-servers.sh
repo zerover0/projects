@@ -6,6 +6,8 @@ export PATH=$JAVA_HOME/bin:$PATH
 
 # OpenTSDB
 kill -HUP `cat /home/hadoop/data/opentsdb/opentsdb.pid`
+echo "Waiting for completing OpenTSDB shutdown..."
+sleep 10
 
 # HBase
 export HBASE_HOME=/home/hadoop/app/hbase
