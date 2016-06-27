@@ -25,7 +25,10 @@ echo "Waiting for HBase ready..."
 sleep 30
 
 # OpenTSDB
+export OPENTSDB_HOME=/home/hadoop/app/opentsdb
+export PATH=$PATH:$OPENTSDB_HOME/bin
+
 echo "Starting OpenTSDB TSD daemon..."
-/home/hadoop/app/opentsdb/build/tsdb tsd --config=/home/hadoop/app/opentsdb/src/opentsdb.conf&
+tsdb tsd --config=/home/hadoop/app/opentsdb/src/opentsdb.conf&
 echo $! > /home/hadoop/data/opentsdb/opentsdb.pid
 
