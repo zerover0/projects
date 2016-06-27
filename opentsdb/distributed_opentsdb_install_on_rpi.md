@@ -150,7 +150,7 @@ $ scp -r ~/app/hbase hadoop@server03:~/app/
 
 9.HBase 프로세스를 실행한다.
 ```sh
-$ ~/app/hbase/bin/start-hbase.sh
+$ /home/hadoop/app/hbase/bin/start-hbase.sh
 ```
 
 10.HBase 프로세스가 작동하는지 확인한다.
@@ -181,7 +181,7 @@ server02:~$ jps
 
 12.HBase 프로세스를 종료하려면, 아래 명령을 실행한다.
 ```sh
-$ ~/app/hbase/bin/stop-hbase.sh
+$ /home/hadoop/app/hbase/bin/stop-hbase.sh
 ```
 
 ##### (master) OpenTSDB 설치와 환경설정
