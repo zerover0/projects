@@ -180,32 +180,55 @@ $ ~/app/hbase/bin/stop-hbase.sh
 
 ##### (master) OpenTSDB 설치와 환경설정
 
-1.다음 주소에서 OpenTSDB의 Debian 릴리즈 파일(*.deb)을 다운로드한다.
+1.다음 주소에서 OpenTSDB의 릴리즈 파일을 다운로드한다.
   - https://github.com/OpenTSDB/opentsdb/releases
 
-2.HBase가 설치된 호스트에서 다운로드한 Debian package 파일을 설치한다.
+2.다운로드한 파일의 압축을 푼 후, 프로그램을 빌드한다.
 ```sh
-$ sudo dpkg -i opentsdb-2.2.0_all.deb
+$ tar xzf opentsdb-2.2.0.tar.gz -C ~/app
+$ mv ~/app/opentsdb-2.2.0 ~/app/opentsdb
+$ cd ~/app/opentsdb
+$ ./build.sh
 ```
 
-3.OpenTSDB 프로그램은 '/usr/local/share/opentsdb/' 디렉토리에 설치된다. 환경설정 파일인 'opentsdb.conf'을 열어서 필요한 옵션을 설정하고 저장한다.
+3.환경설정파일 'opentsdb.conf'을 수정한다.
+  - tsd.network.port = TSD 연결 포트
+  - tsd.http.staticroot = OpenTSDB Web UI 홈페이지 파일 위치
+  - tsd.http.cachedir = TSD 임시 파일 저장 위치
   - tsd.core.auto_create_metrics : true = 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric 추가
   - tsd.storage.fix_duplicates : true = 같은 시간에 중복된 데이터가 존재하는 경우 마지막 입력된 데이터만 쓰임
 ```sh
-$ sudo vi /etc/opentsdb/opentsdb.conf
+$ sudo vi ~/app/opentsdb/src/opentsdb.conf
+tsd.network.port = 4242
+tsd.http.staticroot = /home/hadoop/app/opentsdb/build/staticroot
+tsd.http.cachedir = /home/hadoop/data/opentsdb
 tsd.core.auto_create_metrics = true
 tsd.storage.fix_duplicates = true
 ```
 
-4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행한다.
+4.로그설정파일 'logback.xml'을 수정한다. 로그파일이 저장되는 위치를 바꾸어준다. root 권한으로 OpenTSDB를 실행한다면 기본값을 사용해도 문제없다.
+```sh
+$ sudo vi ~/app/opentsdb/src/logback.xml
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/home/hadoop/data/opentsdb/opentsdb.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>/home/hadoop/data/opentsdb/opentsdb.log.%i</fileNamePattern>
+  <appender name="QUERY_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/home/hadoop/data/opentsdb/queries.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>/home/hadoop/data/opentsdb/queries.log.%i</fileNamePattern>
+```
+
+5.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행한다.
 ```sh
 $ export JAVA_HOME=/usr/lib/jvm/default-java
 $ export HBASE_HOME=/home/hadoop/app/hbase
 $ export COMPRESSION=NONE 
-$ /usr/share/opentsdb/tools/create_table.sh
+$ ~/app/opentsdb/src/create_table.sh
+2016-04-15 11:24:19,339 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 HBase Shell; enter 'help<RETURN>' for list of supported commands.
 Type "exit<RETURN>" to leave the HBase Shell
-Version 1.2.1, r14c0e77956f9bb4c6edf0378474264843e4a82c3, Wed Mar 16 21:18:26 PDT 2016
+Version 1.1.4, r14c0e77956f9bb4c6edf0378474264843e4a82c3, Wed Mar 16 21:18:26 PDT 2016
 
 create 'tsdb-uid',
   {NAME => 'id', COMPRESSION => 'NONE', BLOOMFILTER => 'ROW'},
@@ -233,18 +256,19 @@ create 'tsdb-meta',
 Hbase::Table - tsdb-meta
 ```
 
-5.TSD 데몬을 실행한다.
+6.TSD 데몬을 실행한다. TSD 데몬을 실행할 때 프로세스 ID를 파일로 저장해두면 TSD 데몬을 종료할 때 이용할 수 있다.
 ```sh
-$ sudo service opentsdb start
-```
-  - 만일, 아래와 같은 에러가 나면, '/tmp/opentsdb' 디렉토리를 지우고 다시 실행한다.
-```
-2016-04-15 20:53:44,517 INFO  [main] Config: Successfully loaded configuration file: /etc/opentsdb/opentsdb.conf
-Cannot write to directory [/tmp/opentsdb]
+$ /home/hadoop/app/opentsdb/build/tsdb tsd --config=/home/hadoop/app/opentsdb/src/opentsdb.conf&
+$ echo $! > /home/hadoop/data/opentsdb/opentsdb.pid
 ```
 
-6.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB Web UI 사이트를 통해서 확인한다.
+7.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB Web UI 사이트를 통해서 확인한다.
   - 호스트 주소가 'server01'인 경우 : http://server01:4242
+
+8.TSD 데몬을 종료할 때는 아래의 명령을 실행한다.
+```sh
+$ kill -HUP `cat /home/hadoop/data/opentsdb/opentsdb.pid`
+```
 
 ##### (master) Grafana에서 OpenTSDB lookup API 사용을 위한 설정
 
