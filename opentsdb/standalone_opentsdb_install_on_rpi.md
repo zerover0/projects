@@ -230,13 +230,3 @@ $ echo $! > /home/pi/data/opentsdb/opentsdb.pid
 ```sh
 $ kill -HUP `cat /home/pi/data/opentsdb/opentsdb.pid`
 ```
-
-##### Grafana에서 OpenTSDB lookup API 사용을 위한 설정
-
-1.Grafana에서 템플릿을 만들 때 변수가 자동으로 나타나도록 하려면 'opentsdb.conf'에 아래 설정을 추가하여 활성화해야 합니다.
-  - tsd.core.meta.enable_realtime_ts = true
-
-2.OpenTSDB에 있는 time series 데이터의 메타데이터를 나타나도록 하려면 아래 명령을 OpenTSDB 서버가 실행 중인 곳에서 실행합니다.
-```sh
-$ /home/pi/app/opentsdb/build/tsdb uid metasync
-```
