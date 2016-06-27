@@ -125,7 +125,6 @@ $ jps
 7.HBase shell을 이용해 HBase에 연결되는지 확인합니다. 시스템 성능에 따라서 다소 시간이 걸리므로 메시지가 나올 때까지 계속 기다립니다.
 ```sh
 $ /home/pi/app/hbase/bin/hbase shell
-tinyos@server01:~$ /usr/local/hbase/bin/hbase shell
 2016-04-15 20:45:40,800 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 HBase Shell; enter 'help<RETURN>' for list of supported commands.
 Type "exit<RETURN>" to leave the HBase Shell
