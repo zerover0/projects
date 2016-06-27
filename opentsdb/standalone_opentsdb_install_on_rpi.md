@@ -6,7 +6,7 @@
 * 사용 소프트웨어 버전
   - Oracle JDK 1.7
   - GnuPlot 4.6
-  - HBase 1.1.4
+  - HBase 0.94.27
   - OpenTSDB 2.2.0
 
 ##### JDK(Java Development Kit) 설치하기
@@ -62,41 +62,58 @@ $ sudo vi /etc/hosts
 127.0.0.1       raspberrypi
 ```
 
+##### 프로그램 설치와 데이터 저장을 위한 디렉토리 생성
+서버 프로그램을 사용자 홈디렉토리에 설치하고 데이터 저장 디렉토리를 사용자 홈디렉토리로 지정하면 root 권한없이도 프로그램을 실행할 수 있어서 관리가 편리합니다.
+
+1.프로그램 설치와 데이터 저장을 위한 디렉토리를 사용자 홈디렉토리('/home/pi')에 생성합니다.
+```sh
+$ mkdir /home/pi/app
+$ mkdir /home/pi/data
+```
+
 ##### HBase 단독실행형으로 설치하기
 HBase를 단독실행형으로 설치하게 되면, HDFS 서버와 ZooKeeper 서버가 별도로 필요하지 않으며 하나의 호스트에서 실행됩니다.
 
-1.다음 주소에서 HBase 릴리즈 파일을 다운로드합니다.
-  - http://apache.mirror.cdnetworks.com/hbase/stable/hbase-1.1.4-bin.tar.gz
+1.HBase 홈페이지에서 0.94.27 릴리즈 파일을 다운로드한다.
+  - http://hbase.apache.org
 
-2.다운로드한 HBase 릴리즈 파일의 압축을 푼 후, 새로 생성된 디렉토리를 '/usr/local/hbase'로 링크합니다.
+2.다운로드한 파일을 hadoop 홈디렉토리 아래에 있는 'app' 디렉토리에 압축을 풀고, 생성된 디렉토리의 이름을 'hbase'로 바꾼다.
 ```sh
-$ tar xzvf hbase-1.1.4-bin.tar.gz -C ~/
-$ sudo ln -s ~/hbase-1.1.4 /usr/local/hbase
+$ tar xzf hbase-0.94.27.tar.gz -C ~/app/
+$ mv ~/app/hbase-0.94.27 ~/app/hbase
 ```
 
-3.'/usr/local/hbase/conf/hbase-env.sh' 스크립트 파일에 Java 홈 디렉토리를 다음과 같이 지정합니다.
-```
+3.'hbase-env.sh' 파일을 열어서 'JAVA_HOME', 'HBASE_CLASSPATH', 'HBASE_HEAPSIZE', 'HBASE_LOG_DIR', 'HBASE_MANAGES_ZK'을 찾아서 수정한 후 저장한다.
+  - JAVA_HOME : Java 홈디렉토리
+  - HBASE_HEAPSIZE : Raspberry Pi의 메모리가 작으므로 heap 용량을 제한한다.
+  - HBASE_LOG_DIR : HBase server 로그 저장 위치
+  - HBASE_MANAGES_ZK : HBase가 내장 ZooKeeper를 이용할 지 여부 설정
+```sh
+$ vi ~/app/hbase/conf/hbase-env.sh
 export JAVA_HOME=/usr/lib/jvm/default-java
+export HBASE_HEAPSIZE=250
+export HBASE_LOG_DIR=/home/pi/data/hbase/logs
 ```
 
-4.'/usr/local/hbase/conf/hbase-site.xml' 파일에 HBase rootdir 설정과 ZooKeeper 데이터 디렉토리를 설정합니다.
+4.'hbase-site.xml' 파일에 HBase rootdir 설정과 ZooKeeper 데이터 디렉토리를 설정합니다.
 다음 설정은 사용자 홈디렉토리를 데이터 디렉토리로 이용하는 HBase 설정의 예입니다.
-```
+```sh
+$ vi ~/app/hbase/conf/hbase-site.xml
 <configuration> 
   <property> 
     <name>hbase.rootdir</name> 
-    <value>file:///home/pi/hbase</value> 
+    <value>file:///home/pi/data/hbase</value> 
   </property> 
   <property> 
     <name>hbase.zookeeper.property.dataDir</name> 
-    <value>/home/pi/zookeeper</value> 
+    <value>/home/pi/data/zookeeper</value> 
   </property> 
 </configuration> 
 ```
 
-5.다음 명령을 실행해서 HBase 서버를 실행합니다. HBase 서버를 최초 실행할 때, Raspberry Pi의 성능문제로 데이터베이스 초기화에 상당한 시간이 소요되므로 약 2분 정도 기다렸다가 이후 과정을 진행합니다.
+5.다음 명령을 실행해서 HBase 서버를 실행합니다. HBase 서버를 실행할 때, Raspberry Pi의 성능문제로 초기화에 상당한 시간이 소요되므로 약 1분 정도 기다렸다가 이후 과정을 진행합니다.
 ```sh
-$ /usr/local/hbase/bin/start-hbase.sh
+$ /home/pi/app/hbase/bin/start-hbase.sh
 ```
 
 6.HMaster 프로세스가 실행되었는지 확인합니다.
@@ -105,9 +122,9 @@ $ jps
 1150 HMaster
 ```
 
-7.HBase shell을 이용해 HBase에 연결되는지 확인합니다. 이때, native-hadoop 라이브러리를 로드할 수 없다는 경고가 나오는데 하둡을 별도로 설치하기 않았기때문에 나오는 메시지므로 무시합니다. 시스템 성능에 따라서 몇분 정도 걸리므로 메시지가 나올 때까지 계속 기다립니다.
+7.HBase shell을 이용해 HBase에 연결되는지 확인합니다. 시스템 성능에 따라서 다소 시간이 걸리므로 메시지가 나올 때까지 계속 기다립니다.
 ```sh
-$ /usr/local/hbase/bin/hbase shell
+$ /home/pi/app/hbase/bin/hbase shell
 tinyos@server01:~$ /usr/local/hbase/bin/hbase shell
 2016-04-15 20:45:40,800 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 HBase Shell; enter 'help<RETURN>' for list of supported commands.
@@ -117,35 +134,58 @@ Version 1.1.4, r14c0e77956f9bb4c6edf0378474264843e4a82c3, Wed Mar 16 21:18:26 PD
 hbase(main):001:0> 
 ```
 
-##### OpenTSDB 설치하기
-
-1.다음 주소에서 OpenTSDB의 릴리즈 파일을 다운로드합니다.
-  - https://github.com/OpenTSDB/opentsdb/releases
-
-2.다운로드한 파일의 압축을 푼 후, 빌드하고 설치합니다.
+8.HBase 서버를 종료할 때는 아래 명령을 실행합니다.
 ```sh
-$ tar xzf opentsdb-2.2.0.tar.gz -C ~/
-$ cd ~/opentsdb-2.2.0
-$ ./build.sh
-$ cd build
-$ sudo make install
+$ /home/pi/app/hbase/bin/stop-hbase.sh
 ```
 
-3.OpenTSDB 프로그램은 '/usr/local/share/opentsdb/' 디렉토리에 설치됩니다. 환경설정 파일인 'opentsdb.conf'을 열어서 필요한 옵션을 설정하고 저장합니다.
+##### OpenTSDB 설치하기
+
+1.다음 주소에서 OpenTSDB의 릴리즈 파일을 다운로드한다.
+  - https://github.com/OpenTSDB/opentsdb/releases
+
+2.다운로드한 파일의 압축을 푼 후, 프로그램을 빌드한다.
+```sh
+$ tar xzf opentsdb-2.2.0.tar.gz -C ~/app
+$ mv ~/app/opentsdb-2.2.0 ~/app/opentsdb
+$ cd ~/app/opentsdb
+$ ./build.sh
+```
+
+3.환경설정파일 'opentsdb.conf'을 수정한다.
+  - tsd.network.port = TSD 연결 포트
+  - tsd.http.staticroot = OpenTSDB 홈페이지 파일 위치
+  - tsd.http.cachedir = TSD 임시 파일 저장 위치
   - tsd.core.auto_create_metrics : true = 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric 추가
   - tsd.storage.fix_duplicates : true = 같은 시간에 중복된 데이터가 존재하는 경우 마지막 입력된 데이터만 쓰임
 ```sh
-$ sudo vi /usr/local/share/opentsdb/etc/opentsdb/opentsdb.conf
+$ sudo vi ~/app/opentsdb/src/opentsdb.conf
+tsd.network.port = 4242
+tsd.http.staticroot = /home/pi/app/opentsdb/build/staticroot
+tsd.http.cachedir = /home/pi/data/opentsdb
 tsd.core.auto_create_metrics = true
 tsd.storage.fix_duplicates = true
 ```
 
-4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행해야 합니다.
+4.로그설정파일 'logback.xml'을 수정한다. 로그파일이 저장되는 위치를 바꾸어준다. root 권한으로 OpenTSDB를 실행한다면 기본값을 사용해도 문제없다.
+```sh
+$ sudo vi ~/app/opentsdb/src/logback.xml
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/home/pi/data/opentsdb/opentsdb.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>/home/pi/data/opentsdb/opentsdb.log.%i</fileNamePattern>
+  <appender name="QUERY_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/home/pi/data/opentsdb/queries.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>/home/pi/data/opentsdb/queries.log.%i</fileNamePattern>
+```
+
+5.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행한다.
 ```sh
 $ export JAVA_HOME=/usr/lib/jvm/default-java
-$ export HBASE_HOME=/usr/local/hbase 
+$ export HBASE_HOME=/home/pi/app/hbase
 $ export COMPRESSION=NONE 
-$ /usr/share/opentsdb/tools/create_table.sh
+$ ~/app/opentsdb/src/create_table.sh
 2016-04-15 11:24:19,339 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 HBase Shell; enter 'help<RETURN>' for list of supported commands.
 Type "exit<RETURN>" to leave the HBase Shell
@@ -177,20 +217,19 @@ create 'tsdb-meta',
 Hbase::Table - tsdb-meta
 ```
 
-5.TSD 데몬을 실행해서 문제가 없는지 확인합니다.
+6.TSD 데몬을 실행한다. TSD 데몬을 실행할 때 프로세스 ID를 파일로 저장해두면 TSD 데몬을 종료할 때 이용할 수 있다.
 ```sh
-$ /usr/share/opentsdb/bin/tsdb tsd
-(중간 생략)
-2016-04-15 20:54:56,124 INFO  [main] TSDMain: Ready to serve on /0.0.0.0:4242
-```
-  - 만일, 아래와 같은 에러가 나면, '/tmp/opentsdb' 디렉토리를 지우고 다시 실행합니다.
-```
-2016-04-15 20:53:44,517 INFO  [main] Config: Successfully loaded configuration file: /etc/opentsdb/opentsdb.conf
-Cannot write to directory [/tmp/opentsdb]
+$ /home/pi/app/opentsdb/build/tsdb tsd --config=/home/hadoop/app/opentsdb/src/opentsdb.conf&
+$ echo $! > /home/pi/data/opentsdb/opentsdb.pid
 ```
 
-6.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB 관리페이지를 통해서 확인합니다.
-  - 호스트 주소가 '192.168.0.3'인 경우 : http://192.168.0.3:4242
+7.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB Web UI 사이트를 통해서 확인한다.
+  - 호스트 주소가 'server01'인 경우 : http://server01:4242
+
+8.TSD 데몬을 종료할 때는 아래의 명령을 실행한다.
+```sh
+$ kill -HUP `cat /home/pi/data/opentsdb/opentsdb.pid`
+```
 
 ##### Grafana에서 OpenTSDB lookup API 사용을 위한 설정
 
@@ -199,5 +238,5 @@ Cannot write to directory [/tmp/opentsdb]
 
 2.OpenTSDB에 있는 time series 데이터의 메타데이터를 나타나도록 하려면 아래 명령을 OpenTSDB 서버가 실행 중인 곳에서 실행합니다.
 ```sh
-$ /usr/share/opentsdb/bin/tsdb uid metasync
+$ /home/pi/app/opentsdb/build/tsdb uid metasync
 ```
