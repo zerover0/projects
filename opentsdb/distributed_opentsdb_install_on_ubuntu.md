@@ -192,11 +192,11 @@ $ ./build.sh
 ```
 
 3.환경설정파일 'opentsdb.conf'을 수정한다.
-  - tsd.network.port = TSD 연결 포트
-  - tsd.http.staticroot = OpenTSDB Web UI 홈페이지 파일 위치
-  - tsd.http.cachedir = TSD 임시 파일 저장 위치
-  - tsd.core.auto_create_metrics : true = 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric 추가
-  - tsd.storage.fix_duplicates : true = 같은 시간에 중복된 데이터가 존재하는 경우 마지막 입력된 데이터만 쓰임
+  - (수정) tsd.network.port = TSD 연결 포트
+  - (수정) tsd.http.staticroot = OpenTSDB Web UI 홈페이지 파일 위치
+  - (수정) tsd.http.cachedir = TSD 임시 파일 저장 위치
+  - (수정) tsd.core.auto_create_metrics : true = 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric 추가
+  - (추가) tsd.storage.fix_duplicates : true = 같은 시간에 중복된 데이터가 존재하는 경우 마지막 입력된 데이터만 쓰임
 ```sh
 $ sudo vi ~/app/opentsdb/src/opentsdb.conf
 tsd.network.port = 4242
