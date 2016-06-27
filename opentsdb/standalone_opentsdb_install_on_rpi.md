@@ -218,7 +218,7 @@ Hbase::Table - tsdb-meta
 
 6.TSD 데몬을 실행한다. TSD 데몬을 실행할 때 프로세스 ID를 파일로 저장해두면 TSD 데몬을 종료할 때 이용할 수 있다.
 ```sh
-$ /home/pi/app/opentsdb/build/tsdb tsd --config=/home/hadoop/app/opentsdb/src/opentsdb.conf&
+$ /home/pi/app/opentsdb/build/tsdb tsd --config=/home/pi/app/opentsdb/src/opentsdb.conf&
 $ echo $! > /home/pi/data/opentsdb/opentsdb.pid
 ```
 
