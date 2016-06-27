@@ -133,18 +133,27 @@ $ vi ~/app/hbase/conf/hbase-site.xml
 </configuration>
 ```
 
-7.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
+7.HBase Master 프로세스가 실행될 때 ZooKeeper 서버를 실행되는데(HBASE_MANAGES_ZK=true 설정에 의해서), Raspberry Pi의 성능문제로 ZooKeepr 서버가 실행되는 시간을 잠시 기다린 후에 HBase Master 프로세스를 실행하도록 'start-hbase.sh' 파일을 수정한다. 아래와 같이 ZooKeepr와 Master 프로세스를 실행하는 코드 사이에 'sleep'을 추가해서 지연시간을 둔다.
+```sh
+$ vi ~/app/hbase/bin/start-hbase.sh
+  "$bin"/hbase-daemons.sh --config "${HBASE_CONF_DIR}" start zookeeper
+  echo "Waiting for ZooKeeper ready..."
+  sleep 10
+  "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" start master
+```
+
+8.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
 ```sh
 $ scp -r ~/app/hbase hadoop@server02:~/app/
 $ scp -r ~/app/hbase hadoop@server03:~/app/
 ```
 
-8.HBase 프로세스를 실행한다.
+9.HBase 프로세스를 실행한다.
 ```sh
 $ ~/app/hbase/bin/start-hbase.sh
 ```
 
-9.HBase 프로세스가 작동하는지 확인한다.
+10.HBase 프로세스가 작동하는지 확인한다.
 ```sh
 server01:~$ jps
 6432 TaskTracker
@@ -164,42 +173,64 @@ server02:~$ jps
 2691 DataNode
 ```
 
-10.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
+11.HBase 모니터링 사이트를 열어서 동작 상태를 확인한다.
   - HBase Master Web UI : http://server01:60010
   - HBase RegionServer Web UI : http://server01:60030
   - HBase RegionServer Web UI : http://server02:60030
   - HBase RegionServer Web UI : http://server03:60030
 
-11.HBase 프로세스를 종료하려면, 아래 명령을 실행한다.
+12.HBase 프로세스를 종료하려면, 아래 명령을 실행한다.
 ```sh
 $ ~/app/hbase/bin/stop-hbase.sh
 ```
 
 ##### (master) OpenTSDB 설치와 환경설정
 
-1.다음 주소에서 OpenTSDB의 Debian 릴리즈 파일(*.deb)을 다운로드한다.
+1.다음 주소에서 OpenTSDB의 릴리즈 파일을 다운로드한다.
   - https://github.com/OpenTSDB/opentsdb/releases
 
-2.HBase가 설치된 호스트에서 다운로드한 Debian package 파일을 설치한다.
+2.다운로드한 파일의 압축을 푼 후, 프로그램을 빌드한다.
 ```sh
-$ sudo dpkg -i opentsdb-2.2.0_all.deb
+$ tar xzf opentsdb-2.2.0.tar.gz -C ~/app
+$ mv ~/app/opentsdb-2.2.0 ~/app/opentsdb
+$ cd ~/app/opentsdb
+$ ./build.sh
 ```
 
-3.OpenTSDB 프로그램은 '/usr/local/share/opentsdb/' 디렉토리에 설치된다. 환경설정 파일인 'opentsdb.conf'을 열어서 필요한 옵션을 설정하고 저장한다.
+3.환경설정파일 'opentsdb.conf'을 수정한다.
+  - tsd.network.port = TSD 연결 포트
+  - tsd.http.staticroot = OpenTSDB 홈페이지 파일 위치
+  - tsd.http.cachedir = TSD 임시 파일 저장 위치
   - tsd.core.auto_create_metrics : true = 레코드의 metric이 데이터베이스에 존재하지 않을 때, 자동으로 metric 추가
   - tsd.storage.fix_duplicates : true = 같은 시간에 중복된 데이터가 존재하는 경우 마지막 입력된 데이터만 쓰임
 ```sh
-$ sudo vi /usr/local/share/opentsdb/etc/opentsdb/opentsdb.conf
+$ sudo vi ~/app/opentsdb/src/opentsdb.conf
+tsd.network.port = 4242
+tsd.http.staticroot = /home/hadoop/app/opentsdb/build/staticroot
+tsd.http.cachedir = /home/hadoop/data/opentsdb
 tsd.core.auto_create_metrics = true
 tsd.storage.fix_duplicates = true
 ```
 
-4.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행한다.
+4.로그설정파일 'logback.xml'을 수정한다. 로그파일이 저장되는 위치를 바꾸어준다. root 권한으로 OpenTSDB를 실행한다면 기본값을 사용해도 문제없다.
+```sh
+$ sudo vi ~/app/opentsdb/src/logback.xml
+  <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/home/hadoop/data/opentsdb/opentsdb.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>/home/hadoop/data/opentsdb/opentsdb.log.%i</fileNamePattern>
+  <appender name="QUERY_LOG" class="ch.qos.logback.core.rolling.RollingFileAppender">
+    <file>/home/hadoop/data/opentsdb/queries.log</file>
+    <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+      <fileNamePattern>/home/hadoop/data/opentsdb/queries.log.%i</fileNamePattern>
+```
+
+5.OpenTSDB를 설치한 후, 최초로 한번 데이터베이스 테이블을 구성하는 명령을 실행한다.
 ```sh
 $ export JAVA_HOME=/usr/lib/jvm/default-java
-$ export HBASE_HOME=/usr/local/hbase 
+$ export HBASE_HOME=/home/hadoop/app/hbase
 $ export COMPRESSION=NONE 
-$ /usr/share/opentsdb/tools/create_table.sh
+$ ~/app/opentsdb/src/create_table.sh
 2016-04-15 11:24:19,339 WARN  [main] util.NativeCodeLoader: Unable to load native-hadoop library for your platform... using builtin-java classes where applicable
 HBase Shell; enter 'help<RETURN>' for list of supported commands.
 Type "exit<RETURN>" to leave the HBase Shell
@@ -231,25 +262,16 @@ create 'tsdb-meta',
 Hbase::Table - tsdb-meta
 ```
 
-5.TSD 데몬을 실행한다.
+6.TSD 데몬을 실행한다. TSD 데몬을 실행할 때 프로세스 ID를 파일로 저장해두면 TSD 데몬을 종료할 때 이용할 수 있다.
 ```sh
-$ sudo service opentsdb start
-```
-  - 만일, 아래와 같은 에러가 나면, '/tmp/opentsdb' 디렉토리를 지우고 다시 실행한다.
-```
-2016-04-15 20:53:44,517 INFO  [main] Config: Successfully loaded configuration file: /etc/opentsdb/opentsdb.conf
-Cannot write to directory [/tmp/opentsdb]
+$ /home/hadoop/app/opentsdb/build/tsdb tsd --config=/home/hadoop/app/opentsdb/src/opentsdb.conf&
+$ echo $! > /home/hadoop/data/opentsdb/opentsdb.pid
 ```
 
-6.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB Web UI 사이트를 통해서 확인한다.
+7.OpenTSDB 서비스가 정상적으로 작동하는지 OpenTSDB Web UI 사이트를 통해서 확인한다.
   - 호스트 주소가 'server01'인 경우 : http://server01:4242
 
-##### (master) Grafana에서 OpenTSDB lookup API 사용을 위한 설정
-
-1.Grafana에서 템플릿을 만들 때 변수가 자동으로 나타나도록 하려면 'opentsdb.conf'에 아래 설정을 추가하여 활성화한다.
-  - tsd.core.meta.enable_realtime_ts = true
-
-2.OpenTSDB에 있는 time series 데이터의 메타데이터를 나타나도록 하려면 아래 명령을 OpenTSDB 서버가 실행 중인 호스트에서 실행한다.
+8.TSD 데몬을 종료할 때는 아래의 명령을 실행한다.
 ```sh
-$ /usr/share/opentsdb/bin/tsdb uid metasync
+$ kill -HUP `cat /home/hadoop/data/opentsdb/opentsdb.pid`
 ```
