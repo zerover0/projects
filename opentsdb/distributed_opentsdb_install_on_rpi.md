@@ -133,13 +133,15 @@ $ vi ~/app/hbase/conf/hbase-site.xml
 </configuration>
 ```
 
-7.HBase Master 프로세스가 실행될 때 ZooKeeper 서버를 실행되는데(HBASE_MANAGES_ZK=true 설정에 의해서), Raspberry Pi의 성능문제로 ZooKeepr 서버가 실행되는 시간을 잠시 기다린 후에 HBase Master 프로세스를 실행하도록 'start-hbase.sh' 파일을 수정한다. 아래와 같이 ZooKeepr와 Master 프로세스를 실행하는 코드 사이에 'sleep'을 추가해서 지연시간을 둔다.
+7.HBase Master 프로세스가 실행될 때 ZooKeeper 서버를 실행되는데(HBASE_MANAGES_ZK=true 설정에 의해서), Raspberry Pi의 성능문제로 ZooKeepr 서버가 실행되는 시간을 잠시 기다린 후에 HBase Master 프로세스를 실행하도록 'start-hbase.sh' 파일을 수정한다. 아래와 같이 ZooKeepr와 Master 프로세스를 실행하는 코드에 'sleep'을 추가해서 지연시간을 둔다.
 ```sh
 $ vi ~/app/hbase/bin/start-hbase.sh
   "$bin"/hbase-daemons.sh --config "${HBASE_CONF_DIR}" start zookeeper
   echo "Waiting for ZooKeeper ready..."
   sleep 10
   "$bin"/hbase-daemon.sh --config "${HBASE_CONF_DIR}" start master
+  echo "Waiting for HBase Master ready..."
+  sleep 10
 ```
 
 8.master 노드에 있는 HBase 디렉토리 전체를 slave 노드로 복사한다. 원격으로 slave 노드의 프로세스를 실행하려면 master 노드와 디렉토리 구조가 동일해야한다.
