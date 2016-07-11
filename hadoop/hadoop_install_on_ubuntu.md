@@ -7,6 +7,7 @@
 * 사용 소프트웨어 버전
   - Oracle JDK 1.7
   - Hadoop 2.6.4
+  - NTP daemon
 
 ### 호스트 구성
 
@@ -71,6 +72,15 @@ dns-nameservers 210.220.163.82 219.250.36.130
 ```sh
 $ sudo apt-get update
 $ sudo apt-get install openssh-server
+```
+
+### (공통) NTP daemon 설치
+분산 서버들 간의 시간을 맞추기 NTP daemon을 설치한다.
+
+1.NTP daemon을 설치한다.
+```sh
+$ sudo apt-get update
+$ sudo apt-get install ntp
 ```
 
 ### (공통) Oracle JDK 설치
