@@ -11,6 +11,14 @@ $ sudo ldconfig
 $ sudo reboot
 ```
 
+### Anaconda2를 설치해서 사용하는 경우
+
+Anaconda2 설치 디렉토리 아래에 있는 library 경로를 LD_LIBRARY_PATH에 추가한다.
+- ~/.bashrc:
+```
+export LD_LIBRARY_PATH=$HOME/anaconda2/lib:$LD_LIBRARY_PATH
+```
+
 ### GitHub에서 소스 다운로드해서 빌드하기
 
 GitHub에서 최신 소스를 다운로드한다.
@@ -26,6 +34,8 @@ $ cp Makefile.config.example Makefile.config
 - Makefile.config:
 ```
 USE_CUDNN := 1
+```
+```
 # PYTHON_INCLUDE := /usr/include/python2.7 \
                 /usr/lib/python2.7/dist-packages/numpy/core/include
 ANACONDA_HOME := $(HOME)/anaconda
