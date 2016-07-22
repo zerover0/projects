@@ -31,10 +31,12 @@ Makefile.config 파일에 cuDNN과 Anaconda 등을 설정한다.
 $ cd caffe
 $ cp Makefile.config.example Makefile.config
 ```
-- Makefile.config:
+- 수정파일: Makefile.config
+  - cuDNN 설정:
 ```
 USE_CUDNN := 1
 ```
+  - Anaconda 경로 설정
 ```
 # PYTHON_INCLUDE := /usr/include/python2.7 \
                 /usr/lib/python2.7/dist-packages/numpy/core/include
