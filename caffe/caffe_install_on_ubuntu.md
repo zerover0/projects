@@ -40,7 +40,7 @@ USE_CUDNN := 1
   - Anaconda 경로 설정:
 ```
 # PYTHON_INCLUDE := /usr/include/python2.7 \
-                /usr/lib/python2.7/dist-packages/numpy/core/include
+#                 /usr/lib/python2.7/dist-packages/numpy/core/include
 ANACONDA_HOME := $(HOME)/anaconda
 PYTHON_INCLUDE := $(ANACONDA_HOME)/include \
            $(ANACONDA_HOME)/include/python2.7 \
