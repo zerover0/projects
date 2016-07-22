@@ -36,7 +36,8 @@ $ cp Makefile.config.example Makefile.config
 ```
 USE_CUDNN := 1
 ```
-  - Anaconda 경로 설정
+- 수정파일: Makefile.config
+  - Anaconda 경로 설정:
 ```
 # PYTHON_INCLUDE := /usr/include/python2.7 \
                 /usr/lib/python2.7/dist-packages/numpy/core/include
