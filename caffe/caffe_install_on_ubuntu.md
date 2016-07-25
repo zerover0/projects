@@ -41,7 +41,7 @@ USE_CUDNN := 1
 ```
 # PYTHON_INCLUDE := /usr/include/python2.7 \
 #                 /usr/lib/python2.7/dist-packages/numpy/core/include
-ANACONDA_HOME := $(HOME)/anaconda
+ANACONDA_HOME := $(HOME)/anaconda2
 PYTHON_INCLUDE := $(ANACONDA_HOME)/include \
            $(ANACONDA_HOME)/include/python2.7 \
            $(ANACONDA_HOME)/lib/python2.7/site-packages/numpy/core/include \
