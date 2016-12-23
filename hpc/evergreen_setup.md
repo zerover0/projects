@@ -90,7 +90,7 @@ $ sudo ln -s /usr/lib/jvm/java-8-oracle /usr/lib/jvm/default-java
 ##### Python Anaconda setup
 * Anaconda is an open data science platform by Python.
 * Download Anaconda Linux 64 bit version for Python 3.5
-  > https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh
+  - https://repo.continuum.io/archive/Anaconda3-4.2.0-Linux-x86_64.sh
 * Open a terminal and run the following command to install Anaconda
 ```sh
 $ bash Anaconda3-4.2.0-Linux-x86_64.sh
