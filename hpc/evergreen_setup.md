@@ -134,6 +134,13 @@ Python 3.5.2 :: Anaconda 4.2.0 (64-bit)
 ### Hadoop ecosystem setup
 
 ##### Creating a user account for Hadoop ecosystem
+* It's good to create new user account for Hadoop ecosystem management.
+  - username : hadoop
+* Create new user account, and add it to 'sudo' group.
+```sh
+$ sudo adduser hadoop
+$ sudo adduser hadoop sudo
+```
 * Generate a public/private RSA key pair for later use.
 ```sh
 $ ssh-keygen -t rsa -P "" -f ~/.ssh/id_rsa
