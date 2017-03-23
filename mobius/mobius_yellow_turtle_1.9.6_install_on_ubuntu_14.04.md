@@ -1,20 +1,19 @@
-### Mobius Yellow Turtle 서버를 Ubuntu 14.04에 설치하기
+### Mobius Yellow Turtle 1.9.6 Ubuntu 14.04에 설치하기
 
 ##### Mobius Yellow Turtle 설치 환경과 사용 소프트웨어
 
-* 운영체제 : Ubuntu 14.04 x86 64-bit
+* 운영체제 : Ubuntu 14.04.5 LTS x86 64-bit
 * 사용 소프트웨어 버전
   - Mobius Yellow Turtle : 1.9.6
     - **[주의] Mobius Yellow Turtle 2.0 이상 버전의 속성들이 바뀐 것이 있는데 기존 문서나 코드와 호환이 되지 않고 있기때문에 당분간 2.0으로 업그레이드는 하지 않는 것이 좋습니다.**
   - MySQL 데이터베이스 서버 : 5.5 (Ubuntu 기본 패키지 버전)
-  - Mosquitto MQTT 서버 : 1.4.8 (MQTT broker 3.1)
+  - Mosquitto MQTT 서버 : 1.4.x (MQTT 3.1)
     - Mosquitto 1.3 이하 버전에서는 WebSocket이 지원되지 않아서 Mobius 서버와 Thyme이 연동할 수 없습니다.
-  - Node.js : 4.4.1
+  - Node.js : 4.x.x
 
 ##### MySQL 데이터베이스 서버 설치
 
 1.MySQL을 설치합니다. 
-  - 설치 과정 중에 root 암호는 'tinyos'로 지정합니다. 
 ```sh
 $ sudo apt-get update 
 $ sudo apt-get install -y mysql-server mysql-client 
