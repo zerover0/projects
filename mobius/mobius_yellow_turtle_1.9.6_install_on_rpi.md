@@ -14,7 +14,6 @@
 ##### MySQL 데이터베이스 서버 설치
 
 1.MySQL을 설치합니다. 
-  - 설치 과정 중에 root 암호는 'tinyos'로 지정합니다. 
 ```sh
 $ sudo apt-get update 
 $ sudo apt-get install -y mysql-server mysql-client 
@@ -32,7 +31,7 @@ $ sudo service mysql restart
 3.'mobiusdb' 데이터베이스를  생성하고, 데이터베이스에 접속 권한을 부여합니다.
 ```sh
 $ mysql –u root –p 
-Enter password: tinyos 
+Enter password: (MySQL root 암호)
 mysql> create database mobiusdb; 
 mysql> grant all on *.* to 'root'@'%' identified by 'tinyos'; 
 mysql> flush privileges; 
@@ -65,7 +64,7 @@ mysql> show tables;
 
 ##### Mosquitto MQTT 서버 설치
 
-1.Mosquitto 릴리즈 저장소 정ㅂ를 업데이트합니다.
+1.Mosquitto 릴리즈 저장소  정보를 업데이트합니다.
 ```sh
 $ wget http://repo.mosquitto.org/debian/mosquitto-repo.gpg.key
 $ sudo apt-key add mosquitto-repo.gpg.key
@@ -130,8 +129,8 @@ $ npm install
 
 2.'conf.json' 파일을 서버 구성에 맞도록 수정합니다. 특히, MySQL 데이터베이스의 root 암호를 확인해서 수정합니다.
 
-    "dbpass": "tinyos", 
-
+    "dbpass": "(MySQL root 암호)", 
+    
 3.Mobius Yellow Turtle 서버를 실행합니다. 
 ```sh
 $ node app.js 
