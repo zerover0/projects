@@ -30,7 +30,7 @@ $ sudo service mysql restart
 
 3.'mobiusdb' 데이터베이스를  생성하고, 데이터베이스에 접속 권한을 부여합니다.
 ```sh
-$ mysql –u root –p 
+$ sudo mysql –u root –p 
 Enter password: (MySQL root 암호)
 mysql> create database mobiusdb; 
 mysql> grant all on *.* to 'root'@'%' identified by 'tinyos'; 
@@ -41,7 +41,7 @@ mysql> flush privileges;
   - SQL script('Dump*.sql)는 OCEAN 사이트에 Yellow Turtle download 페이지에서 다운로드할 수 있습니다. 
   - SQL script는 Mobius 버전과 호환되는 버전을 사용해야 합니다.
 ```sh
-$ mysql –u root -p 
+$ sudo mysql –u root -p 
 mysql> use mobiusdb; 
 mysql> source ./Dump20151113.sql; 
 mysql> show tables; 
