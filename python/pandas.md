@@ -1,4 +1,6 @@
-### Installing pandas with Anaconda
+# Pandas
+
+## Installing pandas with Anaconda
 
 Installing pandas and the rest of the NumPy and SciPy stack can be a little difficult for inexperienced users.
 
@@ -12,11 +14,12 @@ A full list of the packages available as part of the Anaconda distribution can b
 
 An additional advantage of installing with Anaconda is that you don’t require admin rights to install it, it will install in the user’s home directory, and this also makes it trivial to delete Anaconda at a later date (just delete that folder).
 
-> source: http://pandas.pydata.org/pandas-docs/stable/install.html
+> Reference : [http://pandas.pydata.org/pandas-docs/stable/install.html](http://pandas.pydata.org/pandas-docs/stable/install.html)
 
-### Running the test suite
+## Running the test suite
 
 pandas is equipped with an exhaustive set of unit tests covering about 97% of the codebase as of this writing. To run it on your machine to verify that everything is working (and you have all of the dependencies, soft and hard, installed), make sure you have nose and run:
+
 ```python
 >>> import pandas as pd
 >>> pd.test()
@@ -39,9 +42,11 @@ OK (SKIP=117)
 
 pandas 1.18.0 이후 버전 테스트할 때 아래와 같은 날짜 파싱 문제가 발생하면 Python dateutil 패키지를 포함해서 Anaconda를 업데이트해야한다.
 특히, 최근에 dateutil 패키지가 2.5.0 버전으로 업그레이드하면서 문제가 발생했는데, 2.5.3 버전에서 수정되었다.
+
 ```sh
 conda update --all
 ```
+
 ```python
 ======================================================================
 FAIL: test_yy_format (pandas.io.tests.test_parsers.TestCParserHighMemory)

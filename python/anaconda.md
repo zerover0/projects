@@ -1,6 +1,9 @@
-### Anaconda Installation on Linux
+# Anaconda
+
+## Anaconda Installation on Linux
 
 In your browser download the Anaconda installer for Linux, then in your terminal window type the following,
+
 ```sh
 bash ~/Downloads/Anaconda3-4.0.0-Linux-x86_64.sh
 ```
@@ -17,11 +20,12 @@ NOTE: If you select the option to not add the Anaconda directory to your bash sh
 
 Finally, close and re-open your terminal window for the changes to take effect.
 
-> Source: https://docs.continuum.io/anaconda/install
+> Reference : [https://docs.continuum.io/anaconda/install](https://docs.continuum.io/anaconda/install)
 
-### Updating from older Anaconda versions
+## Updating from older Anaconda versions
 
 You can easily update to the latest Anaconda version by updating conda, then Anaconda as follows:
+
 ```sh
 conda update conda
 conda update anaconda
